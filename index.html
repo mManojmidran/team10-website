@@ -11,8 +11,6 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <!-- Supabase JS Library -->
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     
     <script>
         tailwind.config = {
@@ -20,9 +18,9 @@
                 extend: {
                     fontFamily: { sans: ['Inter', 'sans-serif'] },
                     colors: {
-                        primary: '#1E56A0',
-                        blueBtn: '#3b82f6',
-                        blueBtnHover: '#2563eb'
+                        primary: '#1a365d',
+                        blueBtn: '#2563eb',
+                        blueBtnHover: '#1d4ed8'
                     }
                 }
             }
@@ -32,96 +30,82 @@
     <style>
         body {
             font-family: 'Inter', sans-serif;
-            background-color: #F8FAFC; 
+            background-color: #F3F4F6; 
             color: #1f2937;
             overflow-x: hidden;
         }
         
+        /* Mountain Background */
         .hero-pattern {
             background-image: url('https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?q=80&w=2070&auto=format&fit=crop');
             background-size: cover;
-            background-position: center;
+            background-position: center 60%;
         }
 
         .hero-overlay {
-            background: linear-gradient(to bottom, rgba(255, 230, 200, 0.3) 0%, rgba(255, 255, 255, 0.6) 60%, #F8FAFC 100%);
+            background: linear-gradient(to bottom, rgba(255, 230, 200, 0.4) 0%, rgba(255, 255, 255, 0.7) 50%, #F3F4F6 100%);
         }
         
         .topic-card { transition: all 0.2s ease-in-out; }
-        .topic-card:hover { transform: translateY(-3px); box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1); }
+        .topic-card:hover { transform: translateY(-2px); box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1); }
 
-        .icon-python { color: #F5C518; }
-        .icon-ds { color: #22c55e; }
-        .icon-web { color: #3b82f6; }
-        .icon-db { color: #3b82f6; }
-        .icon-idea { color: #F59E0B; }
-        .icon-ml { color: #475569; }
-        
-        #ui-toast {
+        /* Custom Toasts */
+        .toast-popup {
             bottom: -100px; 
             transition: bottom 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
         }
-        #ui-toast.show { bottom: 24px; }
-        
-        #admin-warning-toast {
-            bottom: -100px; 
-            transition: bottom 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-        }
-        #admin-warning-toast.show { bottom: 24px; }
-        
-        .loader {
-            border: 3px solid #f3f3f3;
-            border-top: 3px solid #3b82f6;
-            border-radius: 50%;
-            width: 24px;
-            height: 24px;
-            animation: spin 1s linear infinite;
-        }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        .toast-popup.show { bottom: 24px; }
     </style>
 </head>
 <body class="antialiased min-h-screen relative flex flex-col">
 
-    <header class="relative hero-pattern h-[300px] md:h-[400px] flex flex-col items-center justify-center text-center p-6">
+    <!-- Header Section -->
+    <header class="relative hero-pattern h-[350px] md:h-[420px] flex flex-col items-center justify-center text-center p-6">
         <div class="absolute inset-0 hero-overlay z-0"></div>
         
         <!-- Secret Lock -->
-        <div id="secretLock" class="absolute top-4 right-4 cursor-pointer p-2 z-50 transition-opacity opacity-40 hover:opacity-100" title="Secret Area">
-            <i class="fas fa-lock text-gray-800 text-lg"></i>
+        <div id="secretLock" class="absolute top-4 right-6 cursor-pointer p-2 z-50 transition-opacity opacity-50 hover:opacity-100" title="Secret Area">
+            <i class="fas fa-lock text-gray-800 text-xl"></i>
         </div>
 
-        <div class="z-10 flex flex-col items-center mt-2">
-            <div class="mb-2 text-primary">
-                <i class="fas fa-graduation-cap text-4xl"></i>
+        <div class="z-10 flex flex-col items-center mt-6">
+            <div class="mb-3 text-primary">
+                <i class="fas fa-graduation-cap text-5xl"></i>
             </div>
-            <p class="text-lg md:text-xl font-semibold tracking-wide mb-1 text-primary">Welcome to webpage of</p>
-            <h1 class="text-5xl md:text-7xl font-extrabold mb-1 tracking-tight text-primary drop-shadow-sm">
+            <p class="text-lg md:text-xl font-bold tracking-wide mb-1 text-primary">Welcome to webpage of</p>
+            <h1 class="text-6xl md:text-8xl font-extrabold mb-2 tracking-tight text-primary drop-shadow-sm">
                 CSE - H
             </h1>
-            <div class="flex items-center justify-center gap-3 mb-4">
-                <div class="h-[2px] w-8 bg-primary"></div>
-                <h2 class="text-xl md:text-2xl font-bold text-primary tracking-wide">Team -10</h2>
-                <div class="h-[2px] w-8 bg-primary"></div>
+            <div class="flex items-center justify-center gap-4 mb-5">
+                <div class="h-[2px] w-10 bg-primary"></div>
+                <h2 class="text-2xl md:text-3xl font-bold text-primary tracking-wide">Team -10</h2>
+                <div class="h-[2px] w-10 bg-primary"></div>
             </div>
-            <p class="text-gray-800 font-medium tracking-wide text-sm md:text-base mb-2">
+            <p class="text-gray-800 font-semibold tracking-wide text-sm md:text-base">
                 Learn &nbsp;&bull;&nbsp; Share &nbsp;&bull;&nbsp; Grow Together
             </p>
+            <div class="mt-4 text-primary text-xl">
+                <i class="fas fa-users"></i>
+            </div>
         </div>
     </header>
 
-    <main class="flex-grow container mx-auto px-4 py-8 max-w-[1200px] relative z-10">
+    <!-- Main Content -->
+    <main class="flex-grow container mx-auto px-4 py-8 max-w-[1200px] relative z-10 -mt-6">
         
         <!-- Toolbar -->
-        <div class="flex flex-col md:flex-row justify-between items-center gap-4 mb-8 bg-white p-3 rounded-xl shadow-sm border border-gray-100">
+        <div class="flex flex-col md:flex-row justify-between items-center gap-4 mb-8 bg-white p-4 rounded-xl shadow-sm border border-gray-100">
+            <!-- Search -->
             <div class="relative w-full md:w-1/2">
                 <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
                     <i class="fas fa-search text-gray-400"></i>
                 </div>
-                <input type="text" id="searchInput" placeholder="Search by title..." class="w-full pl-11 pr-4 py-2.5 rounded-lg border border-transparent focus:border-blue-200 focus:ring-2 focus:ring-blue-100 outline-none text-sm font-medium bg-gray-50 transition-all">
+                <input type="text" id="searchInput" placeholder="Search by title..." class="w-full pl-11 pr-4 py-2.5 rounded-lg border border-gray-200 focus:border-blue-400 focus:ring-2 focus:ring-blue-100 outline-none text-sm font-medium transition-all">
             </div>
             
             <div class="flex w-full md:w-auto items-center gap-3">
-                <div class="w-full md:w-auto flex items-center bg-gray-50 rounded-lg px-3 relative border border-transparent hover:border-gray-200 transition-all">
+                <!-- Sort -->
+                <div class="w-full md:w-auto flex items-center bg-white rounded-lg px-3 relative border border-gray-200 hover:border-gray-300 transition-all">
                     <i class="far fa-calendar-alt text-gray-500 absolute left-3"></i>
                     <select id="sortSelect" class="w-full md:w-auto pl-8 pr-8 py-2.5 rounded-lg focus:outline-none bg-transparent text-sm font-medium text-gray-700 appearance-none cursor-pointer">
                         <option value="newest">Sort by: Date Uploaded</option>
@@ -130,63 +114,233 @@
                     <i class="fas fa-chevron-down text-gray-400 absolute right-3 pointer-events-none text-xs"></i>
                 </div>
 
-                <button id="addTopicBtn" class="hidden w-full md:w-auto bg-blueBtn text-white px-5 py-2.5 rounded-lg hover:bg-blueBtnHover transition font-medium shadow-sm whitespace-nowrap text-sm flex items-center justify-center">
+                <!-- Add Button (Admin Only) -->
+                <button id="addTopicBtn" class="hidden w-full md:w-auto bg-blueBtn text-white px-6 py-2.5 rounded-lg hover:bg-blueBtnHover transition font-medium shadow-md whitespace-nowrap text-sm flex items-center justify-center">
                     <i class="fas fa-plus mr-2"></i> Add Topic
                 </button>
             </div>
         </div>
 
-        <!-- Loading State -->
-        <div id="initialLoading" class="flex flex-col items-center justify-center py-20 text-blue-500">
-            <div class="loader mb-4"></div>
-            <p class="text-sm font-medium text-gray-500">Connecting to database...</p>
-        </div>
-
         <!-- Topics Feed -->
-        <div id="topicsContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 hidden"></div>
+        <div id="topicsContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
         
         <!-- Empty State -->
         <div id="emptyState" class="hidden flex-col items-center justify-center py-20 text-gray-500 bg-white rounded-2xl shadow-sm border border-gray-100 mt-4">
             <i class="fas fa-folder-open text-5xl mb-4 text-gray-300"></i>
-            <p class="text-lg font-medium text-gray-800">No topics found.</p>
-            <p class="text-sm text-gray-400 mt-1">Check back later or configure your Supabase connection.</p>
+            <p class="text-lg font-medium text-gray-800">No topics uploaded yet.</p>
         </div>
     </main>
 
     <!-- Footer -->
-    <footer class="bg-[#2D3748] text-gray-300 py-5 text-center text-sm flex flex-col md:flex-row items-center justify-between px-8 mt-auto">
-        <div class="hidden md:block text-gray-400 text-xs"><i class="fab fa-github"></i> Open Source Project</div> 
-        <div class="mb-2 md:mb-0 font-medium">CSE - H <span class="mx-2 text-gray-500">|</span> Team -10 <i class="fas fa-heart text-gray-400 text-xs ml-1"></i></div>
-        <div class="flex items-center gap-2 opacity-60 italic text-xs"><i class="fas fa-seedling"></i> Better Together</div>
+    <footer class="bg-[#2D3748] text-gray-300 py-4 text-center text-sm flex flex-col md:flex-row items-center justify-center px-8 mt-auto">
+        <div class="font-medium">CSE - H <span class="mx-2 text-gray-500">|</span> Team -10 <i class="fas fa-heart text-gray-400 text-xs ml-1"></i></div>
+        <div class="hidden md:block mx-4 text-gray-500">|</div>
+        <div class="flex items-center gap-2 opacity-80 italic text-xs mt-2 md:mt-0"><i class="fas fa-seedling"></i> Better Together</div>
     </footer>
 
     <!-- Modals Overlay -->
-    <div id="modalOverlay" class="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 hidden flex-col items-center justify-center p-4">
+    <div id="modalOverlay" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 hidden flex-col items-center justify-center p-4">
         
-        <!-- Login Modal -->
+        <!-- Admin Login Modal -->
         <div id="loginModal" class="bg-white rounded-2xl shadow-2xl w-full max-w-[320px] p-6 hidden relative">
             <button class="close-modal absolute top-3 right-4 text-gray-400 hover:text-gray-600"><i class="fas fa-times text-lg"></i></button>
             <div class="flex items-center gap-2 mb-6">
-                <i class="fas fa-lock text-gray-800 text-lg"></i>
+                <i class="fas fa-lock text-primary text-lg"></i>
                 <h2 class="text-lg font-bold text-gray-800">Admin Login</h2>
             </div>
             <div class="space-y-4">
                 <div class="relative">
                     <div class="absolute inset-y-0 left-0 pl-3 flex items-center"><i class="far fa-user text-gray-400 text-sm"></i></div>
-                    <input type="email" id="loginEmail" class="w-full pl-9 pr-4 py-2 border border-gray-300 rounded-lg outline-none text-sm focus:border-blue-500 transition-colors" placeholder="admin123@maom.com">
+                    <input type="email" id="loginEmail" class="w-full pl-9 pr-4 py-2 border border-gray-300 rounded-lg outline-none text-sm focus:border-blue-500 transition-colors" placeholder="Email (admin123@maom.com)">
                 </div>
                 <div class="relative">
                     <div class="absolute inset-y-0 left-0 pl-3 flex items-center"><i class="fas fa-lock text-gray-400 text-xs"></i></div>
-                    <input type="password" id="loginPassword" class="w-full pl-9 pr-4 py-2 border border-gray-300 rounded-lg outline-none text-sm focus:border-blue-500 transition-colors" placeholder="Password">
+                    <input type="password" id="loginPassword" class="w-full pl-9 pr-4 py-2 border border-gray-300 rounded-lg outline-none text-sm focus:border-blue-500 transition-colors" placeholder="Password (relax)">
                 </div>
                 <div id="loginError" class="text-red-500 text-xs hidden font-medium text-center bg-red-50 p-2 rounded">Invalid credentials.</div>
                 <button id="loginSubmitBtn" class="w-full bg-blueBtn text-white font-medium py-2 rounded-lg hover:bg-blueBtnHover transition text-sm shadow-sm mt-2">Login</button>
             </div>
         </div>
 
-        <!-- Topic Form Modal -->
+        <!-- Add/Edit Topic Modal -->
         <div id="topicModal" class="bg-white rounded-2xl shadow-2xl w-full max-w-xl p-6 hidden max-h-[90vh] overflow-y-auto relative">
             <button class="close-modal absolute top-5 right-5 text-gray-400 hover:text-gray-600"><i class="fas fa-times text-lg"></i></button>
+            <h2 id="topicModalTitle" class="text-xl font-bold text-gray-800 mb-5 border-b pb-3">Add New Topic</h2>
+            <input type="hidden" id="editTopicId" value="">
+            
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-1">Topic Title *</label>
+                    <input type="text" id="topicTitle" class="w-full px-3 py-2 border border-gray-300 rounded-lg outline-none text-sm focus:border-blue-500" placeholder="e.g. Python Basics">
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-1">Description *</label>
+                    <textarea id="topicDesc" rows="3" class="w-full px-3 py-2 border border-gray-300 rounded-lg outline-none text-sm focus:border-blue-500" placeholder="Briefly describe the topic..."></textarea>
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-1">Resources (Comma separated filenames)</label>
+                    <input type="text" id="topicUrl" class="w-full px-3 py-2 border border-gray-300 rounded-lg outline-none text-sm focus:border-blue-500" placeholder="e.g. Notes.pdf, code.png, intro.mp4">
+                    <p class="text-xs text-gray-500 mt-1"><i class="fas fa-info-circle"></i> Type file names to display icons (pdf, png, mp4, doc).</p>
+                </div>
+            </div>
+
+            <div class="flex justify-end gap-3 mt-6 pt-4 border-t">
+                <button class="close-modal px-5 py-2 rounded-lg text-gray-600 hover:bg-gray-100 font-medium text-sm border transition-colors">Cancel</button>
+                <button id="saveTopicBtn" class="px-5 py-2 rounded-lg bg-blueBtn text-white hover:bg-blueBtnHover font-medium text-sm shadow-sm transition-colors">
+                    Save Topic
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- UI Message Toasts -->
+    <div id="ui-toast" class="toast-popup fixed right-6 bg-white border border-gray-200 text-gray-800 p-4 rounded-xl shadow-2xl z-50 flex items-center gap-3 min-w-[250px]">
+        <div id="ui-toast-icon" class="text-green-500 text-xl"><i class="fas fa-check-circle"></i></div>
+        <div id="ui-toast-msg" class="font-medium text-sm">Action successful</div>
+    </div>
+
+    <div id="admin-warning-toast" class="toast-popup fixed right-6 bg-gray-900 border border-gray-700 text-white p-4 rounded-xl shadow-2xl z-50 flex items-start gap-3 min-w-[300px]">
+        <div class="text-yellow-400 text-xl mt-0.5"><i class="fas fa-exclamation-triangle"></i></div>
+        <div>
+            <div class="font-bold text-sm mb-1">Admin Page</div>
+            <div class="text-xs text-gray-300">This is the admin section.<br><i class="fas fa-lock text-[10px] mr-1"></i> Please login to continue.</div>
+        </div>
+        <button onclick="document.getElementById('admin-warning-toast').classList.remove('show')" class="text-gray-400 hover:text-white ml-auto"><i class="fas fa-times"></i></button>
+    </div>
+
+    <script>
+        // =========================================================================
+        // LOCAL STORAGE DATABASE
+        // =========================================================================
+        // We use local storage so the site loads instantly without loading spinners.
+        let allTopics = JSON.parse(localStorage.getItem('team10_topics')) || [];
+        
+        // Load initial dummy data if empty to match the design
+        if (allTopics.length === 0) {
+            allTopics = [
+                { id: '1', title: 'Python Basics', description: 'Basic python concepts, syntax and examples for beginners.', resources: 'Notes.pdf, code.png, intro.mp4', created_at: Date.now() - 500000 },
+                { id: '2', title: 'Data Structures', description: 'Important concepts of arrays, linked lists, stack and queue.', resources: 'DS_Notes.pdf, lecture.mp4', created_at: Date.now() - 400000 },
+                { id: '3', title: 'Web Development', description: 'HTML, CSS and JavaScript basics with examples.', resources: 'webdev.png, guide.pdf', created_at: Date.now() - 300000 },
+                { id: '4', title: 'Database Systems', description: 'Introduction to DBMS, SQL queries and normalization.', resources: 'dbms.mp4, notes.pdf', created_at: Date.now() - 200000 },
+                { id: '5', title: 'Project Ideas', description: 'Some interesting project ideas for CSE students.', resources: 'ideas.png, list.pdf', created_at: Date.now() - 100000 },
+                { id: '6', title: 'Machine Learning', description: 'Overview of ML, types and real world applications.', resources: '', created_at: Date.now() }
+            ];
+            saveData();
+        }
+
+        function saveData() {
+            localStorage.setItem('team10_topics', JSON.stringify(allTopics));
+        }
+
+        // =========================================================================
+        // STATE MANAGEMENT
+        // =========================================================================
+        window.isAdmin = false;
+        
+        const topicsContainer = document.getElementById('topicsContainer');
+        const emptyState = document.getElementById('emptyState');
+        const searchInput = document.getElementById('searchInput');
+        const sortSelect = document.getElementById('sortSelect');
+
+        function showToast(message, type = 'success') {
+            const toast = document.getElementById('ui-toast');
+            const icon = document.getElementById('ui-toast-icon');
+            document.getElementById('ui-toast-msg').innerText = message;
+            
+            if (type === 'error') { icon.innerHTML = '<i class="fas fa-times-circle text-red-500"></i>'; }
+            else { icon.innerHTML = '<i class="fas fa-check-circle text-green-500"></i>'; }
+            
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 3000);
+        }
+
+        function formatDate(ms) {
+            const date = new Date(ms);
+            const options = { day: 'numeric', month: 'short', year: 'numeric' };
+            return date.toLocaleDateString('en-GB', options);
+        }
+
+        // =========================================================================
+        // RENDERING UI
+        // =========================================================================
+        window.renderTopics = function() {
+            const query = searchInput.value.toLowerCase().trim();
+            const sort = sortSelect.value;
+            
+            let filtered = allTopics.filter(t => t.title.toLowerCase().includes(query) || t.description.toLowerCase().includes(query));
+            
+            // Sort by Date
+            filtered.sort((a, b) => sort === 'newest' ? b.created_at - a.created_at : a.created_at - b.created_at);
+
+            topicsContainer.innerHTML = '';
+            
+            if (filtered.length === 0) {
+                topicsContainer.classList.add('hidden');
+                emptyState.classList.remove('hidden');
+                emptyState.style.display = 'flex';
+            } else {
+                topicsContainer.classList.remove('hidden');
+                emptyState.style.display = 'none';
+                filtered.forEach(topic => topicsContainer.appendChild(createTopicCard(topic)));
+            }
+        }
+
+        function getIconProps(title) {
+            const t = title.toLowerCase();
+            if (t.includes('python')) return { icon: 'fab fa-python', color: '#F5C518', bg: '#FEF9E8' };
+            if (t.includes('data structure') || t.includes('ds')) return { icon: 'fas fa-project-diagram', color: '#22c55e', bg: '#DCFCE7' };
+            if (t.includes('web')) return { icon: 'fas fa-globe', color: '#3b82f6', bg: '#DBEAFE' };
+            if (t.includes('database') || t.includes('sql')) return { icon: 'fas fa-database', color: '#3b82f6', bg: '#DBEAFE' };
+            if (t.includes('idea') || t.includes('project')) return { icon: 'far fa-lightbulb', color: '#F59E0B', bg: '#FEF3C7' };
+            if (t.includes('machine learning') || t.includes('ai')) return { icon: 'fas fa-brain', color: '#475569', bg: '#F1F5F9' };
+            return { icon: 'fas fa-book', color: '#6366f1', bg: '#E0E7FF' }; // Default
+        }
+
+        function getResourceHTML(resString) {
+            if (!resString || resString.trim() === '') {
+                return `<div class="w-full text-center py-2 px-3 border border-dashed border-gray-300 rounded-lg text-xs text-gray-500 bg-gray-50 flex items-center justify-center gap-2 mt-2"><i class="far fa-folder-open"></i> No resource available... 😞</div>`;
+            }
+            
+            const resources = resString.split(',').map(s => s.trim()).filter(s => s);
+            let html = '';
+            
+            resources.forEach(res => {
+                let icon = 'fas fa-file-alt'; let color = 'text-gray-500';
+                const lowerRes = res.toLowerCase();
+                
+                if(lowerRes.endsWith('.pdf')) { icon = 'far fa-file-pdf'; color = 'text-gray-600'; }
+                else if(lowerRes.endsWith('.png') || lowerRes.endsWith('.jpg')) { icon = 'far fa-image'; color = 'text-gray-600'; }
+                else if(lowerRes.endsWith('.mp4')) { icon = 'fas fa-play-circle'; color = 'text-blue-500'; }
+                else if(lowerRes.endsWith('.doc') || lowerRes.endsWith('.docx')) { icon = 'fas fa-file-word'; color = 'text-blue-600'; }
+
+                html += `<div class="flex items-center gap-1.5 text-[12px] font-medium text-gray-600 bg-white px-2 py-1 rounded border border-gray-200 shadow-sm"><i class="${icon} ${color}"></i> ${res}</div>`;
+            });
+            return `<div class="flex flex-wrap gap-2 mt-2">${html}</div>`;
+        }
+
+        function createTopicCard(topic) {
+            const card = document.createElement('div');
+            card.className = "topic-card bg-white rounded-xl p-5 shadow-sm border border-gray-200 flex flex-col relative overflow-hidden h-full";
+            
+            const style = getIconProps(topic.title);
+            
+            let adminControls = '';
+            if (window.isAdmin) {
+                adminControls = `
+                    <div class="absolute bottom-4 right-4 flex gap-3">
+                        <button onclick="editTopic('${topic.id}')" class="text-blue-600 hover:text-blue-800 transition">
+                            <i class="fas fa-pen text-sm"></i>
+                        </button>
+                        <button onclick="deleteTopic('${topic.id}')" class="text-red-500 hover:text-red-700 transition">
+                            <i class="far fa-trash-alt text-sm"></i>
+                        </button>
+                    </div>
+                `;
+            }
+
+            card.innerHTML = `
+                <div class="flex items-start gap-4 mb-3">
+                    <div cla</button>
             <h2 id="topicModalTitle" class="text-xl font-bold text-gray-800 mb-5 border-b pb-3">Add New Topic</h2>
             
             <div class="space-y-4">
