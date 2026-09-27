@@ -1,3 +1,4 @@
+no```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -179,6 +180,168 @@
                 </div>
                 <div>
                     <label class="block text-sm font-semibold text-gray-700 mb-1">Resources (Comma separated filenames)</label>
+                    <input type="text" id="topicUrl" class="w-full px-3 py-2 border border-gray-300 rounded-lg outline-none text-sm focus:border-blue-500" placeholder="e.g. Notes.pdf, code.png, intro.mp4">
+                    <p class="text-xs text-gray-500 mt-1"><i class="fas fa-info-circle"></i> Type file names to display icons (pdf, png, mp4, doc).</p>
+                </div>
+            </div>
+
+            <div class="flex justify-end gap-3 mt-6 pt-4 border-t">
+                <button class="close-modal px-5 py-2 rounded-lg text-gray-600 hover:bg-gray-100 font-medium text-sm border transition-colors">Cancel</button>
+                <button id="saveTopicBtn" class="px-5 py-2 rounded-lg bg-blueBtn text-white hover:bg-blueBtnHover font-medium text-sm shadow-sm transition-colors">
+                    Save Topic
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- UI Message Toasts -->
+    <div id="ui-toast" class="toast-popup fixed right-6 bg-white border border-gray-200 text-gray-800 p-4 rounded-xl shadow-2xl z-50 flex items-center gap-3 min-w-[250px]">
+        <div id="ui-toast-icon" class="text-green-500 text-xl"><i class="fas fa-check-circle"></i></div>
+        <div id="ui-toast-msg" class="font-medium text-sm">Action successful</div>
+    </div>
+
+    <div id="admin-warning-toast" class="toast-popup fixed right-6 bg-gray-900 border border-gray-700 text-white p-4 rounded-xl shadow-2xl z-50 flex items-start gap-3 min-w-[300px]">
+        <div class="text-yellow-400 text-xl mt-0.5"><i class="fas fa-exclamation-triangle"></i></div>
+        <div>
+            <div class="font-bold text-sm mb-1">Admin Page</div>
+            <div class="text-xs text-gray-300">This is the admin section.<br><i class="fas fa-lock text-[10px] mr-1"></i> Please login to continue.</div>
+        </div>
+        <button onclick="document.getElementById('admin-warning-toast').classList.remove('show')" class="text-gray-400 hover:text-white ml-auto"><i class="fas fa-times"></i></button>
+    </div>
+
+    <script>
+        // =========================================================================
+        // LOCAL STORAGE DATABASE
+        // =========================================================================
+        // We use local storage so the site loads instantly without loading spinners.
+        let allTopics = JSON.parse(localStorage.getItem('team10_topics')) || [];
+        
+        // Load initial dummy data if empty to match the design
+        if (allTopics.length === 0) {
+            allTopics = [
+                { id: '1', title: 'Python Basics', description: 'Basic python concepts, syntax and examples for beginners.', resources: 'Notes.pdf, code.png, intro.mp4', created_at: Date.now() - 500000 },
+                { id: '2', title: 'Data Structures', description: 'Important concepts of arrays, linked lists, stack and queue.', resources: 'DS_Notes.pdf, lecture.mp4', created_at: Date.now() - 400000 },
+                { id: '3', title: 'Web Development', description: 'HTML, CSS and JavaScript basics with examples.', resources: 'webdev.png, guide.pdf', created_at: Date.now() - 300000 },
+                { id: '4', title: 'Database Systems', description: 'Introduction to DBMS, SQL queries and normalization.', resources: 'dbms.mp4, notes.pdf', created_at: Date.now() - 200000 },
+                { id: '5', title: 'Project Ideas', description: 'Some interesting project ideas for CSE students.', resources: 'ideas.png, list.pdf', created_at: Date.now() - 100000 },
+                { id: '6', title: 'Machine Learning', description: 'Overview of ML, types and real world applications.', resources: '', created_at: Date.now() }
+            ];
+            saveData();
+        }
+
+        function saveData() {
+            localStorage.setItem('team10_topics', JSON.stringify(allTopics));
+        }
+
+        // =========================================================================
+        // STATE MANAGEMENT
+        // =========================================================================
+        window.isAdmin = false;
+        
+        const topicsContainer = document.getElementById('topicsContainer');
+        const emptyState = document.getElementById('emptyState');
+        const searchInput = document.getElementById('searchInput');
+        const sortSelect = document.getElementById('sortSelect');
+
+        function showToast(message, type = 'success') {
+            const toast = document.getElementById('ui-toast');
+            const icon = document.getElementById('ui-toast-icon');
+            document.getElementById('ui-toast-msg').innerText = message;
+            
+            if (type === 'error') { icon.innerHTML = '<i class="fas fa-times-circle text-red-500"></i>'; }
+            else { icon.innerHTML = '<i class="fas fa-check-circle text-green-500"></i>'; }
+            
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 3000);
+        }
+
+        function formatDate(ms) {
+            const date = new Date(ms);
+            const options = { day: 'numeric', month: 'short', year: 'numeric' };
+            return date.toLocaleDateString('en-GB', options);
+        }
+
+        // =========================================================================
+        // RENDERING UI
+        // =========================================================================
+        window.renderTopics = function() {
+            const query = searchInput.value.toLowerCase().trim();
+            const sort = sortSelect.value;
+            
+            let filtered = allTopics.filter(t => t.title.toLowerCase().includes(query) || t.description.toLowerCase().includes(query));
+            
+            // Sort by Date
+            filtered.sort((a, b) => sort === 'newest' ? b.created_at - a.created_at : a.created_at - b.created_at);
+
+            topicsContainer.innerHTML = '';
+            
+            if (filtered.length === 0) {
+                topicsContainer.classList.add('hidden');
+                emptyState.classList.remove('hidden');
+                emptyState.style.display = 'flex';
+            } else {
+                topicsContainer.classList.remove('hidden');
+                emptyState.style.display = 'none';
+                filtered.forEach(topic => topicsContainer.appendChild(createTopicCard(topic)));
+            }
+        }
+
+        function getIconProps(title) {
+            const t = title.toLowerCase();
+            if (t.includes('python')) return { icon: 'fab fa-python', color: '#F5C518', bg: '#FEF9E8' };
+            if (t.includes('data structure') || t.includes('ds')) return { icon: 'fas fa-project-diagram', color: '#22c55e', bg: '#DCFCE7' };
+            if (t.includes('web')) return { icon: 'fas fa-globe', color: '#3b82f6', bg: '#DBEAFE' };
+            if (t.includes('database') || t.includes('sql')) return { icon: 'fas fa-database', color: '#3b82f6', bg: '#DBEAFE' };
+            if (t.includes('idea') || t.includes('project')) return { icon: 'far fa-lightbulb', color: '#F59E0B', bg: '#FEF3C7' };
+            if (t.includes('machine learning') || t.includes('ai')) return { icon: 'fas fa-brain', color: '#475569', bg: '#F1F5F9' };
+            return { icon: 'fas fa-book', color: '#6366f1', bg: '#E0E7FF' }; // Default
+        }
+
+        function getResourceHTML(resString) {
+            if (!resString || resString.trim() === '') {
+                return `<div class="w-full text-center py-2 px-3 border border-dashed border-gray-300 rounded-lg text-xs text-gray-500 bg-gray-50 flex items-center justify-center gap-2 mt-2"><i class="far fa-folder-open"></i> No resource available... 😞</div>`;
+            }
+            
+            const resources = resString.split(',').map(s => s.trim()).filter(s => s);
+            let html = '';
+            
+            resources.forEach(res => {
+                let icon = 'fas fa-file-alt'; let color = 'text-gray-500';
+                const lowerRes = res.toLowerCase();
+                
+                if(lowerRes.endsWith('.pdf')) { icon = 'far fa-file-pdf'; color = 'text-gray-600'; }
+                else if(lowerRes.endsWith('.png') || lowerRes.endsWith('.jpg')) { icon = 'far fa-image'; color = 'text-gray-600'; }
+                else if(lowerRes.endsWith('.mp4')) { icon = 'fas fa-play-circle'; color = 'text-blue-500'; }
+                else if(lowerRes.endsWith('.doc') || lowerRes.endsWith('.docx')) { icon = 'fas fa-file-word'; color = 'text-blue-600'; }
+
+                html += `<div class="flex items-center gap-1.5 text-[12px] font-medium text-gray-600 bg-white px-2 py-1 rounded border border-gray-200 shadow-sm"><i class="${icon} ${color}"></i> ${res}</div>`;
+            });
+            return `<div class="flex flex-wrap gap-2 mt-2">${html}</div>`;
+        }
+
+        function createTopicCard(topic) {
+            const card = document.createElement('div');
+            card.className = "topic-card bg-white rounded-xl p-5 shadow-sm border border-gray-200 flex flex-col relative overflow-hidden h-full";
+            
+            const style = getIconProps(topic.title);
+            
+            let adminControls = '';
+            if (window.isAdmin) {
+                adminControls = `
+                    <div class="absolute bottom-4 right-4 flex gap-3">
+                        <button onclick="editTopic('${topic.id}')" class="text-blue-600 hover:text-blue-800 transition">
+                            <i class="fas fa-pen text-sm"></i>
+                        </button>
+                        <button onclick="deleteTopic('${topic.id}')" class="text-red-500 hover:text-red-700 transition">
+                            <i class="far fa-trash-alt text-sm"></i>
+                        </button>
+                    </div>
+                `;
+            }
+
+            card.innerHTML = `
+                <div class="flex items-start gap-4 mb-3">
+                    <div claock text-sm font-semibold text-gray-700 mb-1">Resources (Comma separated filenames)</label>
                     <input type="text" id="topicUrl" class="w-full px-3 py-2 border border-gray-300 rounded-lg outline-none text-sm focus:border-blue-500" placeholder="e.g. Notes.pdf, code.png, intro.mp4">
                     <p class="text-xs text-gray-500 mt-1"><i class="fas fa-info-circle"></i> Type file names to display icons (pdf, png, mp4, doc).</p>
                 </div>
