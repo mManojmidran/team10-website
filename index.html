@@ -13,18 +13,11 @@
         tailwind.config = {
             theme: {
                 extend: {
-                    fontFamily: {
-                        sans: ['Inter', 'sans-serif'],
-                    },
+                    fontFamily: { sans: ['Inter', 'sans-serif'] },
                     colors: {
-                        primary: '#1E56A0', // Blue from image
-                        secondary: '#F4F7FB', // Light background
-                        accent: '#FF7F50', // For delete icons etc
-                        textDark: '#1E293B',
-                        textMuted: '#64748B'
-                    },
-                    backgroundImage: {
-                        'hero-pattern': "url('https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?q=80&w=2070&auto=format&fit=crop')", // Mountain background
+                        primary: '#1E56A0', 
+                        secondary: '#F4F7FB',
+                        accent: '#FF7F50',
                     }
                 }
             }
@@ -39,456 +32,248 @@
             overflow-x: hidden;
         }
         
-        /* Smooth scrolling */
-        html {
-            scroll-behavior: smooth;
+        .hero-pattern {
+            background-image: url('https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?q=80&w=2070&auto=format&fit=crop');
+            background-size: cover;
+            background-position: center;
         }
 
-        /* Hide scrollbar for clean UI but keep functionality */
-        ::-webkit-scrollbar {
-            width: 8px;
-        }
-        ::-webkit-scrollbar-track {
-            background: #f1f1f1; 
-        }
-        ::-webkit-scrollbar-thumb {
-            background: #cbd5e1; 
-            border-radius: 4px;
-        }
-        ::-webkit-scrollbar-thumb:hover {
-            background: #94a3b8; 
-        }
-
-        /* Loader */
-        .loader {
-            border-top-color: #1E56A0;
-            -webkit-animation: spinner 1.5s linear infinite;
-            animation: spinner 1.5s linear infinite;
-        }
-        @keyframes spinner {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-        /* Hero Overlay to soften the image and text */
         .hero-overlay {
-            background: linear-gradient(to bottom, rgba(255,255,255,0.7) 0%, rgba(255,255,255,0.2) 60%, rgba(255,255,255,0) 100%);
+            background: linear-gradient(to bottom, rgba(255,255,255,0.6) 0%, rgba(255,255,255,0.2) 60%, rgba(255,255,255,0) 100%);
         }
         
-        /* Card hover effect */
-        .topic-card {
-            transition: all 0.2s ease-in-out;
-        }
-        .topic-card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
-        }
+        .topic-card { transition: all 0.2s ease-in-out; }
+        .topic-card:hover { transform: translateY(-3px); box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1); }
 
-        /* Styling for the topic icons based on title (simulated) */
+        /* Icon Colors matching the image */
         .icon-python { color: #3776AB; }
         .icon-db { color: #336791; }
         .icon-ds { color: #8FBC8F; }
-        .icon-web { color: #61DAFB; }
-        .icon-idea { color: #FFA500; }
-        .icon-ml { color: #FF4500; }
+        .icon-web { color: #3b82f6; }
+        .icon-idea { color: #F59E0B; }
+        .icon-ml { color: #475569; }
         .icon-default { color: #1E56A0; }
 
-        /* Notification Toast styles */
         #notification-toast {
-            bottom: -100px; /* Start hidden below */
+            bottom: -100px; 
             transition: bottom 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
         }
-        #notification-toast.show {
-            bottom: 24px;
-        }
+        #notification-toast.show { bottom: 24px; }
     </style>
 </head>
 <body class="antialiased min-h-screen relative flex flex-col">
 
     <!-- Welcome Hero Section -->
-    <header class="relative bg-hero-pattern bg-cover bg-center h-[50vh] md:h-[60vh] flex flex-col items-center justify-center text-center p-6 border-b border-gray-200">
-        <!-- Overlay to match the light feel of the image -->
+    <header class="relative hero-pattern h-[45vh] md:h-[55vh] flex flex-col items-center justify-center text-center p-6">
         <div class="absolute inset-0 hero-overlay z-0"></div>
         
-        <!-- Secret Lock (Top Right as in image) -->
-        <div id="secretLock" class="absolute top-6 right-6 opacity-40 hover:opacity-100 cursor-pointer p-2 z-50 transition-opacity bg-black/10 rounded-full w-10 h-10 flex items-center justify-center backdrop-blur-sm" title="Secret Area">
-            <i class="fas fa-lock text-gray-800 text-lg"></i>
+        <!-- Secret Lock (Top Right) -->
+        <div id="secretLock" class="absolute top-6 right-6 cursor-pointer p-2 z-50 transition-opacity opacity-70 hover:opacity-100" title="Secret Area">
+            <i class="fas fa-lock text-gray-800 text-xl"></i>
         </div>
 
-        <div class="z-10 flex flex-col items-center">
-            <!-- Graduation Cap Icon -->
-            <div class="mb-4 text-primary">
-                <i class="fas fa-graduation-cap text-6xl drop-shadow-sm"></i>
+        <div class="z-10 flex flex-col items-center mt-4">
+            <div class="mb-3 text-primary">
+                <i class="fas fa-graduation-cap text-5xl"></i>
             </div>
-            
-            <p class="text-xl md:text-2xl font-medium tracking-wide mb-2 text-primary">Welcome to webpage of</p>
-            
+            <p class="text-xl md:text-2xl font-semibold tracking-wide mb-1 text-primary">Welcome to webpage of</p>
             <div class="relative inline-block">
-                <!-- Decorative lines around CSE - H -->
-                <div class="absolute -left-12 top-1/2 transform -translate-y-1/2 w-8 h-1 bg-primary rotate-45 rounded opacity-60"></div>
-                <div class="absolute -left-16 top-1/4 transform -translate-y-1/2 w-6 h-1 bg-primary -rotate-12 rounded opacity-60"></div>
-                <div class="absolute -left-10 bottom-1/4 transform translate-y-1/2 w-6 h-1 bg-primary -rotate-45 rounded opacity-60"></div>
-                
-                <h1 class="text-6xl md:text-8xl font-black mb-2 tracking-tight text-primary drop-shadow-sm">
+                <h1 class="text-6xl md:text-8xl font-black mb-1 tracking-tight text-primary drop-shadow-md">
                     CSE - H
                 </h1>
-                
-                <div class="absolute -right-12 top-1/2 transform -translate-y-1/2 w-8 h-1 bg-primary -rotate-45 rounded opacity-60"></div>
-                <div class="absolute -right-16 top-1/4 transform -translate-y-1/2 w-6 h-1 bg-primary rotate-12 rounded opacity-60"></div>
-                <div class="absolute -right-10 bottom-1/4 transform translate-y-1/2 w-6 h-1 bg-primary rotate-45 rounded opacity-60"></div>
             </div>
-
-            <div class="flex items-center justify-center gap-4 my-2">
-                <div class="h-[2px] w-12 bg-primary"></div>
-                <h2 class="text-2xl md:text-3xl font-bold text-primary tracking-wide">
-                    Team -10
-                </h2>
-                <div class="h-[2px] w-12 bg-primary"></div>
+            <div class="flex items-center justify-center gap-4 mb-4">
+                <div class="h-[2px] w-10 bg-primary"></div>
+                <h2 class="text-2xl md:text-3xl font-bold text-primary tracking-wide">Team -10</h2>
+                <div class="h-[2px] w-10 bg-primary"></div>
             </div>
-            
-            <p class="mt-6 text-gray-700 font-medium tracking-wide text-sm md:text-base">
+            <p class="text-gray-800 font-semibold tracking-wide text-sm md:text-base">
                 Learn &nbsp;&bull;&nbsp; Share &nbsp;&bull;&nbsp; Grow Together
             </p>
-            <div class="mt-2 text-gray-700">
-                <i class="fas fa-users text-xl"></i>
+            <div class="mt-2 text-gray-800">
+                <i class="fas fa-users text-lg"></i>
             </div>
         </div>
     </header>
 
     <!-- Main Content Area -->
-    <main class="flex-grow container mx-auto px-4 py-8 max-w-[1400px] relative z-10 -mt-6">
+    <main class="flex-grow container mx-auto px-4 py-8 max-w-[1200px] relative z-10 -mt-6">
         
-        <!-- Toolbar (Search, Sort, Add Button) -->
-        <div class="flex flex-col lg:flex-row justify-between items-center gap-4 mb-8 bg-white/80 backdrop-blur-md p-3 rounded-2xl shadow-sm border border-gray-200 sticky top-4 z-30">
-            
+        <!-- Toolbar -->
+        <div class="flex flex-col md:flex-row justify-between items-center gap-4 mb-8 bg-white p-3 rounded-xl shadow-sm border border-gray-200">
             <!-- Search -->
-            <div class="relative w-full lg:w-1/3">
+            <div class="relative w-full md:w-1/2 lg:w-1/3">
                 <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
                     <i class="fas fa-search text-gray-400"></i>
                 </div>
-                <input type="text" id="searchInput" placeholder="Search by title..." class="w-full pl-11 pr-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition bg-white text-sm font-medium">
+                <input type="text" id="searchInput" placeholder="Search by title..." class="w-full pl-11 pr-4 py-2.5 rounded-lg border border-gray-200 focus:ring-2 focus:ring-blue-500 outline-none text-sm font-medium">
             </div>
             
-            <div class="flex flex-col sm:flex-row w-full lg:w-auto items-center gap-4">
+            <div class="flex w-full md:w-auto items-center gap-3">
                 <!-- Sort -->
-                <div class="w-full sm:w-auto flex items-center gap-2 bg-white rounded-xl border border-gray-200 px-3 py-1 relative">
-                    <i class="far fa-calendar-alt text-gray-500 absolute left-4"></i>
-                    <select id="sortSelect" class="w-full sm:w-auto pl-8 pr-8 py-2 rounded-xl focus:outline-none cursor-pointer bg-transparent text-sm font-medium text-gray-700 appearance-none">
-                        <option value="newest">Sort by: Date Uploaded (Newest)</option>
-                        <option value="oldest">Sort by: Date Uploaded (Oldest)</option>
+                <div class="w-full md:w-auto flex items-center bg-white rounded-lg border border-gray-200 px-3 relative">
+                    <i class="far fa-calendar-alt text-gray-500 absolute left-3"></i>
+                    <select id="sortSelect" class="w-full md:w-auto pl-8 pr-8 py-2.5 rounded-lg focus:outline-none bg-transparent text-sm font-medium text-gray-700 appearance-none cursor-pointer">
+                        <option value="newest">Sort by: Date Uploaded</option>
+                        <option value="oldest">Sort by: Oldest First</option>
                     </select>
-                    <i class="fas fa-chevron-down text-gray-500 absolute right-4 pointer-events-none text-xs"></i>
+                    <i class="fas fa-chevron-down text-gray-500 absolute right-3 pointer-events-none text-xs"></i>
                 </div>
 
-                <!-- Admin Action Button (Always in flow, hidden if not admin) -->
-                <button id="addTopicBtn" class="hidden w-full sm:w-auto bg-[#3b82f6] text-white px-6 py-2.5 rounded-xl hover:bg-blue-600 transition-colors flex items-center justify-center gap-2 font-medium shadow-sm whitespace-nowrap">
-                    <i class="fas fa-plus"></i> Add Topic
+                <!-- Admin Action Button -->
+                <button id="addTopicBtn" class="hidden w-full md:w-auto bg-[#3b82f6] text-white px-5 py-2.5 rounded-lg hover:bg-blue-600 transition font-medium shadow-sm whitespace-nowrap text-sm">
+                    <i class="fas fa-plus mr-1"></i> Add Topic
                 </button>
             </div>
         </div>
 
         <!-- Topics Feed -->
-        <div id="loadingIndicator" class="flex justify-center items-center py-20">
-            <div class="loader border-4 border-gray-200 rounded-full w-12 h-12"></div>
-        </div>
-
-        <div id="topicsContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 hidden">
-            <!-- Topics will be injected here dynamically -->
+        <div id="topicsContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <!-- Dynamically injected -->
         </div>
         
         <div id="emptyState" class="hidden flex-col items-center justify-center py-20 text-gray-500 bg-white rounded-2xl shadow-sm border border-gray-100">
             <i class="fas fa-folder-open text-6xl mb-4 text-gray-300"></i>
             <p class="text-xl font-medium">No topics found.</p>
-            <p class="text-sm mt-2 text-gray-400">Try adjusting your search or add a new topic.</p>
         </div>
     </main>
 
-    <!-- Footer matching the dark bar at bottom of image -->
+    <!-- Footer -->
     <footer class="bg-[#2D3748] text-gray-300 py-4 text-center text-sm flex items-center justify-between px-8 border-t border-gray-600 mt-8">
-        <div></div> <!-- Spacer -->
-        <div>
-            CSE - H <span class="mx-2">|</span> Team -10 <i class="fas fa-heart text-gray-400 text-xs ml-1"></i>
-        </div>
-        <div class="flex items-center gap-2 opacity-60">
-            <div class="w-4 h-[1px] bg-gray-400 rotate-45"></div>
-            Better Together
-            <div class="w-4 h-[1px] bg-gray-400 -rotate-45"></div>
-        </div>
+        <div></div> 
+        <div>CSE - H <span class="mx-2">|</span> Team -10 <i class="fas fa-heart text-gray-400 text-xs ml-1"></i></div>
+        <div class="flex items-center gap-2 opacity-60 italic">Better Together</div>
     </footer>
 
-    <!-- Modals Container -->
-    <div id="modalOverlay" class="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 hidden flex-col items-center justify-center p-4 opacity-0 transition-opacity duration-300">
+    <!-- Modals Overlay -->
+    <div id="modalOverlay" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 hidden flex-col items-center justify-center p-4">
         
-        <!-- Admin Login Modal (Styled like bottom-left in image) -->
-        <div id="loginModal" class="bg-white rounded-2xl shadow-2xl w-full max-w-sm p-6 transform scale-95 transition-transform duration-300 hidden border border-gray-200 relative">
-            <button class="close-modal absolute top-4 right-4 text-gray-400 hover:text-gray-600">
-                <i class="fas fa-times"></i>
-            </button>
-            <div class="flex items-center gap-3 mb-6">
-                <i class="fas fa-lock text-gray-600 text-xl"></i>
+        <!-- Login Modal -->
+        <div id="loginModal" class="bg-white rounded-2xl shadow-2xl w-full max-w-sm p-6 hidden relative">
+            <button class="close-modal absolute top-4 right-4 text-gray-400 hover:text-gray-600"><i class="fas fa-times"></i></button>
+            <div class="flex items-center gap-2 mb-6">
+                <i class="fas fa-lock text-gray-800 text-lg"></i>
                 <h2 class="text-lg font-bold text-gray-800">Admin Login</h2>
             </div>
             <div class="space-y-4">
                 <div class="relative">
-                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                        <i class="far fa-user text-gray-400"></i>
-                    </div>
-                    <input type="email" id="loginEmail" class="w-full pl-10 pr-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none text-sm" placeholder="admin123@maom.com">
+                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center"><i class="far fa-user text-gray-400 text-sm"></i></div>
+                    <input type="email" id="loginEmail" class="w-full pl-9 pr-4 py-2 border rounded-lg outline-none text-sm focus:border-blue-500" placeholder="admin123@maom.com">
                 </div>
                 <div class="relative">
-                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                        <i class="fas fa-lock text-gray-400 text-xs"></i>
-                    </div>
-                    <input type="password" id="loginPassword" class="w-full pl-10 pr-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none text-sm" placeholder="Password">
+                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center"><i class="fas fa-lock text-gray-400 text-xs"></i></div>
+                    <input type="password" id="loginPassword" class="w-full pl-9 pr-4 py-2 border rounded-lg outline-none text-sm focus:border-blue-500" placeholder="Password">
                 </div>
                 <div id="loginError" class="text-red-500 text-xs hidden font-medium text-center bg-red-50 p-2 rounded">Invalid credentials.</div>
-                <button id="loginSubmitBtn" class="w-full bg-[#3b82f6] text-white font-medium py-2 rounded-lg hover:bg-blue-600 transition mt-2 text-sm shadow-sm">Login</button>
+                <button id="loginSubmitBtn" class="w-full bg-[#3b82f6] text-white font-medium py-2 rounded-lg hover:bg-blue-600 transition text-sm shadow-sm">Login</button>
             </div>
         </div>
 
-        <!-- Topic Form Modal (Add/Edit) -->
-        <div id="topicModal" class="bg-white rounded-2xl shadow-2xl w-full max-w-2xl p-6 md:p-8 transform scale-95 transition-transform duration-300 hidden max-h-[90vh] overflow-y-auto border border-gray-200 relative">
-            <button class="close-modal absolute top-6 right-6 text-gray-400 hover:text-gray-600">
-                <i class="fas fa-times text-xl"></i>
-            </button>
-            <h2 id="topicModalTitle" class="text-2xl font-bold text-gray-800 mb-6 border-b border-gray-100 pb-4">Add New Topic</h2>
+        <!-- Topic Form Modal -->
+        <div id="topicModal" class="bg-white rounded-2xl shadow-2xl w-full max-w-xl p-6 hidden max-h-[90vh] overflow-y-auto relative">
+            <button class="close-modal absolute top-5 right-5 text-gray-400 hover:text-gray-600"><i class="fas fa-times text-lg"></i></button>
+            <h2 id="topicModalTitle" class="text-xl font-bold text-gray-800 mb-5 border-b pb-3">Add New Topic</h2>
             <input type="hidden" id="editTopicId">
             
-            <div class="space-y-5">
+            <div class="space-y-4">
                 <div>
-                    <label class="block text-sm font-semibold text-gray-700 mb-1">Topic Title <span class="text-red-500">*</span></label>
-                    <input type="text" id="topicTitle" class="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none bg-gray-50 text-sm font-medium" placeholder="e.g. Python Basics, Database Systems...">
+                    <label class="block text-sm font-semibold text-gray-700 mb-1">Topic Title *</label>
+                    <input type="text" id="topicTitle" class="w-full px-3 py-2 border rounded-lg outline-none text-sm focus:border-blue-500 bg-gray-50" placeholder="e.g. Python Basics">
                 </div>
-                
                 <div>
-                    <label class="block text-sm font-semibold text-gray-700 mb-1">Description <span class="text-red-500">*</span></label>
-                    <textarea id="topicDesc" rows="4" class="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none bg-gray-50 resize-y text-sm" placeholder="Briefly describe the topic concepts..."></textarea>
+                    <label class="block text-sm font-semibold text-gray-700 mb-1">Description *</label>
+                    <textarea id="topicDesc" rows="3" class="w-full px-3 py-2 border rounded-lg outline-none text-sm focus:border-blue-500 bg-gray-50" placeholder="Briefly describe the topic..."></textarea>
                 </div>
-
-                <div class="bg-blue-50/50 p-5 rounded-xl border border-blue-100">
-                    <label class="block text-sm font-semibold text-gray-800 mb-1">Resources</label>
-                    <p class="text-xs text-gray-500 mb-4">Attach files or provide external links.</p>
-                    
-                    <div class="space-y-4">
+                <div class="bg-blue-50/50 p-4 rounded-lg border border-blue-100">
+                    <label class="block text-sm font-semibold text-gray-800 mb-2">Resource Attachment</label>
+                    <div class="space-y-3">
                         <div>
-                            <label class="block text-xs font-medium text-gray-600 mb-1"><i class="fas fa-file-upload mr-1"></i> Upload File (Img/PDF max 500KB)</label>
-                            <input type="file" id="topicFile" accept="image/*,application/pdf" class="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-white file:text-blue-600 file:border file:border-blue-200 hover:file:bg-blue-50 transition cursor-pointer">
-                            <p id="fileError" class="text-red-500 text-xs mt-1 hidden font-medium">File too large! Must be under 500KB.</p>
+                            <input type="file" id="topicFile" accept="image/*,video/*,application/pdf" class="w-full text-xs text-gray-500 file:mr-4 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:font-semibold file:bg-white file:text-blue-600 file:border file:border-blue-200 cursor-pointer">
                         </div>
-                        
-                        <div class="relative flex py-2 items-center">
-                            <div class="flex-grow border-t border-gray-200"></div>
-                            <span class="flex-shrink-0 mx-4 text-gray-400 text-xs font-semibold uppercase tracking-wider">OR</span>
-                            <div class="flex-grow border-t border-gray-200"></div>
-                        </div>
-
+                        <div class="text-xs text-center text-gray-400 font-bold">OR</div>
                         <div>
-                            <label class="block text-xs font-medium text-gray-600 mb-1"><i class="fas fa-link mr-1"></i> Resource URL</label>
-                            <input type="url" id="topicUrl" class="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none text-sm bg-white" placeholder="https://example.com/video">
+                            <input type="url" id="topicUrl" class="w-full px-3 py-2 border rounded-lg outline-none text-sm bg-white focus:border-blue-500" placeholder="Paste an external URL link here...">
                         </div>
                     </div>
-                </div>
-
-                <!-- Preview Area -->
-                <div id="resourcePreview" class="hidden mt-4 p-3 border border-green-200 rounded-lg bg-green-50 text-sm overflow-hidden text-ellipsis whitespace-nowrap flex items-center justify-between">
-                    <div>
-                        <i class="fas fa-check-circle text-green-500 mr-2"></i>
-                        <span class="font-medium text-gray-700">Attached:</span> <span id="previewText" class="text-green-700 font-medium ml-1"></span>
-                    </div>
-                    <button id="clearResourceBtn" class="text-gray-400 hover:text-red-500 font-bold p-1 rounded transition" type="button" title="Remove attachment"><i class="fas fa-times"></i></button>
                 </div>
             </div>
 
-            <div class="flex justify-end gap-3 mt-8 pt-4 border-t border-gray-100">
-                <button class="close-modal px-6 py-2.5 rounded-xl text-gray-600 hover:bg-gray-100 font-medium transition text-sm">Cancel</button>
-                <button id="saveTopicBtn" class="px-6 py-2.5 rounded-xl bg-[#3b82f6] text-white hover:bg-blue-600 font-medium transition shadow-sm flex items-center gap-2 text-sm">
-                    <i class="fas fa-save"></i> Save Topic
-                </button>
+            <div class="flex justify-end gap-3 mt-6 pt-4 border-t">
+                <button class="close-modal px-5 py-2 rounded-lg text-gray-600 hover:bg-gray-100 font-medium text-sm border">Cancel</button>
+                <button id="saveTopicBtn" class="px-5 py-2 rounded-lg bg-[#3b82f6] text-white hover:bg-blue-600 font-medium text-sm shadow-sm">Save Topic</button>
             </div>
         </div>
 
         <!-- Confirm Delete Modal -->
-        <div id="confirmModal" class="bg-white rounded-2xl shadow-2xl w-full max-w-sm p-6 transform scale-95 transition-transform duration-300 hidden text-center border border-gray-200">
-            <div class="w-14 h-14 bg-red-50 rounded-full flex items-center justify-center mx-auto mb-4 border border-red-100">
-                <i class="far fa-trash-alt text-2xl text-red-500"></i>
-            </div>
-            <h3 class="text-lg font-bold text-gray-800 mb-2">Delete Topic?</h3>
-            <p class="text-gray-500 text-sm mb-6">Are you sure you want to remove this topic? This action cannot be undone.</p>
+        <div id="confirmModal" class="bg-white rounded-2xl shadow-xl w-full max-w-sm p-6 hidden text-center">
+            <div class="w-12 h-12 bg-red-50 rounded-full flex items-center justify-center mx-auto mb-3"><i class="far fa-trash-alt text-xl text-red-500"></i></div>
+            <h3 class="text-lg font-bold text-gray-800 mb-1">Delete Topic?</h3>
+            <p class="text-gray-500 text-sm mb-5">This action cannot be undone.</p>
             <div class="flex justify-center gap-3">
-                <button class="close-modal px-4 py-2 rounded-xl text-gray-600 hover:bg-gray-100 font-medium transition w-full border border-gray-200 text-sm">Cancel</button>
-                <button id="confirmDeleteBtn" class="px-4 py-2 rounded-xl bg-red-500 text-white hover:bg-red-600 font-medium transition shadow-sm w-full text-sm">Delete</button>
+                <button class="close-modal px-4 py-2 rounded-lg text-gray-600 border w-full text-sm font-medium">Cancel</button>
+                <button id="confirmDeleteBtn" class="px-4 py-2 rounded-lg bg-red-500 text-white w-full text-sm font-medium">Delete</button>
             </div>
-        </div>
-        
-        <!-- Generic Alert Modal -->
-        <div id="alertModal" class="bg-white rounded-2xl shadow-2xl w-full max-w-sm p-6 transform scale-95 transition-transform duration-300 hidden text-center border border-gray-200">
-            <div id="alertIcon" class="w-14 h-14 rounded-full flex items-center justify-center mx-auto mb-4">
-                <i class="fas fa-info-circle text-2xl"></i>
-            </div>
-            <h3 id="alertTitle" class="text-lg font-bold text-gray-800 mb-2">Notice</h3>
-            <p id="alertMessage" class="text-gray-500 text-sm mb-6">Message goes here.</p>
-            <button class="close-modal px-4 py-2 rounded-xl bg-[#3b82f6] text-white hover:bg-blue-600 font-medium transition shadow-sm w-full text-sm">OK</button>
         </div>
     </div>
 
-    <!-- Notification Toast (like bottom-right in image) -->
+    <!-- Notification Toast -->
     <div id="notification-toast" class="fixed right-6 bg-[#1E293B] text-white p-4 rounded-xl shadow-2xl z-50 flex items-start gap-3 max-w-sm border border-gray-700">
-        <div class="text-[#F59E0B] mt-0.5">
-            <i class="fas fa-exclamation-triangle"></i>
-        </div>
+        <div class="text-[#F59E0B] mt-0.5"><i class="fas fa-exclamation-triangle"></i></div>
         <div>
-            <h4 id="toast-title" class="font-semibold text-sm mb-1 text-white">Admin Page</h4>
-            <p id="toast-message" class="text-xs text-gray-300">This is the admin section.<br><i class="fas fa-lock text-[#F59E0B] mr-1 text-[10px]"></i> Please login to continue.</p>
+            <h4 class="font-semibold text-sm mb-1 text-white">Admin Page</h4>
+            <p class="text-xs text-gray-300">This is the admin section.<br><i class="fas fa-lock text-[#F59E0B] mr-1 text-[10px]"></i> Please login to continue.</p>
         </div>
-        <button onclick="hideToast()" class="text-gray-400 hover:text-white absolute top-3 right-3 text-xs">
-            <i class="fas fa-times"></i>
-        </button>
+        <button onclick="document.getElementById('notification-toast').classList.remove('show')" class="text-gray-400 hover:text-white absolute top-3 right-3 text-xs"><i class="fas fa-times"></i></button>
     </div>
 
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, collection, addDoc, updateDoc, deleteDoc, doc, onSnapshot, query } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
-
-        // Global Firebase configuration variables provided by the environment
-        const appId = typeof __app_id !== 'undefined' ? __app_id : 'team-10-app';
-        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {
-            projectId: "demo-project",
-        };
-
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        const db = getFirestore(app);
-
-        // State variables
+    <script>
+        // --- State Management ---
         let isAdmin = false;
         let allTopics = [];
         let base64ResourceData = null;
         let itemToDelete = null;
-        
-        // Topics Collection Reference
-        const topicsRef = collection(db, 'artifacts', appId, 'public', 'data', 'topics');
 
-        // Mock data for initial view matching the image
-        const initialMockData = [
-            { title: 'Python Basics', description: 'Basic python concepts, syntax and examples for beginners.', createdAt: Date.now() - 10000000, resourceData: 'mock_python' },
-            { title: 'Data Structures', description: 'Important concepts of arrays, linked lists, stack and queue.', createdAt: Date.now() - 20000000, resourceData: 'mock_ds' },
-            { title: 'Web Development', description: 'HTML, CSS and JavaScript basics with examples.', createdAt: Date.now() - 30000000, resourceData: 'mock_web' },
-            { title: 'Database Systems', description: 'Introduction to DBMS, SQL queries and normalization.', createdAt: Date.now() - 40000000, resourceData: 'mock_db' },
-            { title: 'Project Ideas', description: 'Some interesting project ideas for CSE students.', createdAt: Date.now() - 50000000, resourceData: 'mock_idea' },
-            { title: 'Machine Learning', description: 'Overview of ML, types and real world applications.', createdAt: Date.now() - 60000000, resourceData: null }
+        // Default Data exactly matching your requested UI Image
+        const defaultMockData = [
+            { id: '1', title: 'Python Basics', description: 'Basic python concepts, syntax and\nexamples for beginners.', createdAt: Date.now(), resources: 'mock_python' },
+            { id: '2', title: 'Data Structures', description: 'Important concepts of arrays, linked lists,\nstack and queue.', createdAt: Date.now() - 1000, resources: 'mock_ds' },
+            { id: '3', title: 'Web Development', description: 'HTML, CSS and JavaScript basics with\nexamples.', createdAt: Date.now() - 2000, resources: 'mock_web' },
+            { id: '4', title: 'Database Systems', description: 'Introduction to DBMS, SQL queries and\nnormalization.', createdAt: Date.now() - 3000, resources: 'mock_db' },
+            { id: '5', title: 'Project Ideas', description: 'Some interesting project ideas for CSE\nstudents.', createdAt: Date.now() - 4000, resources: 'mock_idea' },
+            { id: '6', title: 'Machine Learning', description: 'Overview of ML, types and real world\napplications.', createdAt: Date.now() - 5000, resources: 'mock_none' }
         ];
 
-        // Initialize Authentication & Firestore Listener
-        async function initApp() {
-            try {
-                if (typeof __initial_auth_token !== 'undefined') {
-                    await signInWithCustomToken(auth, __initial_auth_token);
-                } else {
-                    await signInAnonymously(auth);
-                }
-
-                onSnapshot(query(topicsRef), async (snapshot) => {
-                    allTopics = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                    
-                    // Seed initial data if collection is completely empty
-                    if (allTopics.length === 0) {
-                        loadingIndicator.style.display = 'flex';
-                        for (const topic of initialMockData) {
-                            await addDoc(topicsRef, topic);
-                        }
-                    } else {
-                        renderTopics();
-                        loadingIndicator.style.display = 'none';
-                    }
-                }, (error) => {
-                    console.error("Firestore listener error:", error);
-                    loadingIndicator.style.display = 'none';
-                });
-
-            } catch (error) {
-                console.error("Authentication failed:", error);
-                loadingIndicator.style.display = 'none';
+        // --- Initialize App from LocalStorage ---
+        function initApp() {
+            const savedData = localStorage.getItem('team10_topics');
+            if (savedData) {
+                allTopics = JSON.parse(savedData);
+            } else {
+                allTopics = [...defaultMockData];
+                saveToLocalStorage();
             }
+            renderTopics();
         }
 
-        // Start initialization
-        initApp();
-        
-        // DOM Elements
+        function saveToLocalStorage() {
+            localStorage.setItem('team10_topics', JSON.stringify(allTopics));
+        }
+
+        // --- Render UI ---
         const topicsContainer = document.getElementById('topicsContainer');
-        const loadingIndicator = document.getElementById('loadingIndicator');
         const emptyState = document.getElementById('emptyState');
         const searchInput = document.getElementById('searchInput');
         const sortSelect = document.getElementById('sortSelect');
-        const secretLock = document.getElementById('secretLock');
-        const addTopicBtn = document.getElementById('addTopicBtn');
-        const toast = document.getElementById('notification-toast');
-        
-        // Modal Elements
-        const modalOverlay = document.getElementById('modalOverlay');
-        const loginModal = document.getElementById('loginModal');
-        const topicModal = document.getElementById('topicModal');
-        const confirmModal = document.getElementById('confirmModal');
-        const alertModal = document.getElementById('alertModal');
-        const closeButtons = document.querySelectorAll('.close-modal');
-
-        // Form Elements
-        const topicTitle = document.getElementById('topicTitle');
-        const topicDesc = document.getElementById('topicDesc');
-        const topicFile = document.getElementById('topicFile');
-        const topicUrl = document.getElementById('topicUrl');
-        const saveTopicBtn = document.getElementById('saveTopicBtn');
-        const editTopicId = document.getElementById('editTopicId');
-        const fileError = document.getElementById('fileError');
-        const resourcePreview = document.getElementById('resourcePreview');
-        const previewText = document.getElementById('previewText');
-        const clearResourceBtn = document.getElementById('clearResourceBtn');
-
-        // Helper to guess icon based on title
-        function getIconForTitle(title) {
-            const t = title.toLowerCase();
-            if (t.includes('python')) return { class: 'fab fa-python icon-python', bg: 'bg-blue-50' };
-            if (t.includes('database') || t.includes('dbms') || t.includes('sql')) return { class: 'fas fa-database icon-db', bg: 'bg-indigo-50' };
-            if (t.includes('data structure') || t.includes('algorithm')) return { class: 'fas fa-project-diagram icon-ds', bg: 'bg-green-50' };
-            if (t.includes('web') || t.includes('html') || t.includes('css')) return { class: 'fas fa-globe icon-web', bg: 'bg-cyan-50' };
-            if (t.includes('idea') || t.includes('project')) return { class: 'far fa-lightbulb icon-idea', bg: 'bg-yellow-50' };
-            if (t.includes('machine learning') || t.includes('ai')) return { class: 'fas fa-brain icon-ml', bg: 'bg-red-50' };
-            return { class: 'fas fa-book icon-default', bg: 'bg-gray-50' }; // Default
-        }
-
-        // Helper to generate fake resources string for mock data based on image
-        function getMockResourcesHtml(mockType) {
-            switch(mockType) {
-                case 'mock_python': return `<span class="inline-flex items-center gap-1 text-gray-500"><i class="far fa-file-pdf"></i> Notes.pdf</span> <span class="inline-flex items-center gap-1 text-gray-500"><i class="far fa-image"></i> code.png</span> <span class="inline-flex items-center gap-1 text-gray-500"><i class="far fa-play-circle text-indigo-400"></i> intro.mp4</span>`;
-                case 'mock_ds': return `<span class="inline-flex items-center gap-1 text-gray-500"><i class="far fa-file-pdf"></i> DS_Notes.pdf</span> <span class="inline-flex items-center gap-1 text-gray-500"><i class="far fa-play-circle text-indigo-400"></i> lecture.mp4</span>`;
-                case 'mock_web': return `<span class="inline-flex items-center gap-1 text-gray-500"><i class="far fa-image"></i> webdev.png</span> <span class="inline-flex items-center gap-1 text-gray-500"><i class="far fa-file-pdf"></i> guide.pdf</span>`;
-                case 'mock_db': return `<span class="inline-flex items-center gap-1 text-gray-500"><i class="far fa-play-circle text-indigo-400"></i> dbms.mp4</span> <span class="inline-flex items-center gap-1 text-gray-500"><i class="far fa-file-pdf"></i> notes.pdf</span>`;
-                case 'mock_idea': return `<span class="inline-flex items-center gap-1 text-gray-500"><i class="far fa-image"></i> ideas.png</span> <span class="inline-flex items-center gap-1 text-gray-500"><i class="far fa-file-pdf"></i> list.pdf</span>`;
-                default: return '';
-            }
-        }
 
         function renderTopics() {
             const query = searchInput.value.toLowerCase().trim();
             const sort = sortSelect.value;
             
-            // Filter
-            let filtered = allTopics.filter(topic => 
-                (topic.title || '').toLowerCase().includes(query)
-            );
+            let filtered = allTopics.filter(t => t.title.toLowerCase().includes(query));
             
-            // Sort
-            filtered.sort((a, b) => {
-                const timeA = a.createdAt || 0;
-                const timeB = b.createdAt || 0;
-                
-                if (sort === 'newest') return timeB - timeA;
-                return timeA - timeB;
-            });
+            filtered.sort((a, b) => sort === 'newest' ? b.createdAt - a.createdAt : a.createdAt - b.createdAt);
 
             topicsContainer.innerHTML = '';
-
             if (filtered.length === 0) {
                 topicsContainer.classList.add('hidden');
                 emptyState.classList.remove('hidden');
@@ -496,235 +281,159 @@
             } else {
                 topicsContainer.classList.remove('hidden');
                 emptyState.style.display = 'none';
-                
-                filtered.forEach(topic => {
-                    const card = createTopicCard(topic);
-                    topicsContainer.appendChild(card);
-                });
+                filtered.forEach(topic => topicsContainer.appendChild(createTopicCard(topic)));
             }
+        }
+
+        function getIconProps(title) {
+            const t = title.toLowerCase();
+            if (t.includes('python')) return { c: 'fab fa-python icon-python' };
+            if (t.includes('data structure')) return { c: 'fas fa-project-diagram icon-ds' };
+            if (t.includes('web')) return { c: 'fas fa-globe icon-web' };
+            if (t.includes('database')) return { c: 'fas fa-database icon-db' };
+            if (t.includes('idea')) return { c: 'far fa-lightbulb icon-idea' };
+            if (t.includes('machine learning')) return { c: 'fas fa-brain icon-ml' };
+            return { c: 'fas fa-book icon-default' };
+        }
+
+        function getResourceHTML(res) {
+            if (!res || res === 'mock_none') return `<div class="w-full text-center py-2 px-3 border border-dashed border-gray-300 rounded text-xs text-gray-500 bg-gray-50"><i class="far fa-folder-open"></i> No resource available... 😞</div>`;
+            if (res === 'mock_python') return `<span class="flex items-center gap-1"><i class="far fa-file-alt text-gray-500"></i> Notes.pdf</span> <span class="flex items-center gap-1"><i class="far fa-image text-gray-500"></i> code.png</span> <span class="flex items-center gap-1 text-[#3b82f6]"><i class="fas fa-play"></i> intro.mp4</span>`;
+            if (res === 'mock_ds') return `<span class="flex items-center gap-1"><i class="far fa-file-alt text-gray-500"></i> DS_Notes.pdf</span> <span class="flex items-center gap-1 text-[#3b82f6]"><i class="fas fa-play"></i> lecture.mp4</span>`;
+            if (res === 'mock_web') return `<span class="flex items-center gap-1"><i class="far fa-image text-gray-500"></i> webdev.png</span> <span class="flex items-center gap-1"><i class="far fa-file-alt text-gray-500"></i> guide.pdf</span>`;
+            if (res === 'mock_db') return `<span class="flex items-center gap-1 text-[#3b82f6]"><i class="fas fa-play"></i> dbms.mp4</span> <span class="flex items-center gap-1"><i class="far fa-file-alt text-gray-500"></i> notes.pdf</span>`;
+            if (res === 'mock_idea') return `<span class="flex items-center gap-1"><i class="far fa-image text-gray-500"></i> ideas.png</span> <span class="flex items-center gap-1"><i class="far fa-file-alt text-gray-500"></i> list.pdf</span>`;
+            
+            if (res.startsWith('data:')) return `<span class="flex items-center gap-1"><i class="fas fa-paperclip text-gray-500"></i> Custom File Attached</span>`;
+            if (res.startsWith('http')) return `<a href="${res}" target="_blank" class="flex items-center gap-1 text-blue-500 hover:underline"><i class="fas fa-link"></i> External Link</a>`;
+            return `<span class="flex items-center gap-1"><i class="fas fa-file"></i> Attached</span>`;
         }
 
         function createTopicCard(topic) {
             const div = document.createElement('div');
-            div.className = 'topic-card bg-white rounded-2xl p-6 shadow-sm border border-gray-100 flex flex-col h-full relative group';
+            div.className = 'topic-card bg-white rounded-xl p-5 border border-gray-200 flex flex-col h-full relative group';
             
-            // Format Date
-            let dateStr = 'Unknown date';
-            if (topic.createdAt) {
-                const d = new Date(topic.createdAt);
-                dateStr = d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }); // 14 Apr 2025 format
-            }
+            const d = new Date(topic.createdAt);
+            const dateStr = d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
+            const icon = getIconProps(topic.title);
 
-            const iconInfo = getIconForTitle(topic.title);
-
-            // Resource Rendering
-            let resourceHtml = '';
-            if (topic.resourceData && topic.resourceData.startsWith('mock_')) {
-                resourceHtml = getMockResourcesHtml(topic.resourceData);
-            } else if (topic.resourceData) {
-                if (topic.resourceData.startsWith('data:image')) {
-                    resourceHtml = `<span class="inline-flex items-center gap-1 text-gray-500"><i class="far fa-image"></i> Image Attached</span>`;
-                } else if (topic.resourceData.startsWith('data:application/pdf')) {
-                    resourceHtml = `<span class="inline-flex items-center gap-1 text-gray-500"><i class="far fa-file-pdf"></i> Document.pdf</span>`;
-                } else if (topic.resourceData.startsWith('http')) {
-                    resourceHtml = `<a href="${topic.resourceData}" target="_blank" class="inline-flex items-center gap-1 text-blue-500 hover:underline"><i class="fas fa-link"></i> External Link</a>`;
-                } else {
-                     resourceHtml = `<span class="inline-flex items-center gap-1 text-gray-500"><i class="far fa-file"></i> File Attached</span>`;
-                }
-            } else {
-                resourceHtml = `<div class="px-4 py-2 border border-dashed border-gray-200 rounded-lg text-xs text-gray-400 bg-gray-50/50 flex items-center justify-center gap-2 w-full">
-                    <i class="far fa-folder-open"></i> No resource available... 😞
-                </div>`;
-            }
-
-            // Admin Controls UI (Bottom Right as in image)
-            let adminControlsHtml = '';
+            let adminTools = '';
             if (isAdmin) {
-                adminControlsHtml = `
-                    <div class="absolute bottom-4 right-4 flex gap-3 opacity-0 group-hover:opacity-100 transition-opacity">
-                        <button class="edit-btn text-blue-600 hover:text-blue-800 transition p-1" data-id="${topic.id}" title="Edit">
-                            <i class="fas fa-pen text-sm"></i>
-                        </button>
-                        <button class="delete-btn text-red-500 hover:text-red-700 transition p-1" data-id="${topic.id}" title="Delete">
-                            <i class="far fa-trash-alt text-sm"></i>
-                        </button>
-                    </div>
-                `;
+                adminTools = `
+                    <div class="absolute bottom-4 right-4 flex gap-3">
+                        <button onclick="editTopic('${topic.id}')" class="text-blue-600 hover:text-blue-800 p-1"><i class="fas fa-pen text-sm"></i></button>
+                        <button onclick="deletePrompt('${topic.id}')" class="text-red-500 hover:text-red-700 p-1"><i class="far fa-trash-alt text-sm"></i></button>
+                    </div>`;
             }
 
             div.innerHTML = `
-                <div class="flex gap-4 mb-4">
-                    <!-- Icon Box -->
-                    <div class="w-12 h-12 rounded-xl flex-shrink-0 flex items-center justify-center ${iconInfo.bg}">
-                        <i class="${iconInfo.class} text-2xl"></i>
+                <div class="flex gap-4 mb-3">
+                    <div class="w-10 h-10 flex-shrink-0 flex items-center justify-center mt-1">
+                        <i class="${icon.c} text-4xl drop-shadow-sm"></i>
                     </div>
-                    
-                    <!-- Title & Date -->
-                    <div class="flex-grow">
-                        <h3 class="text-lg font-bold text-[#1E293B] leading-tight mb-1">${escapeHTML(topic.title)}</h3>
-                        <div class="text-xs font-medium text-gray-400 flex items-center gap-1">
+                    <div>
+                        <h3 class="text-[17px] font-bold text-[#1E293B] mb-0.5">${topic.title}</h3>
+                        <div class="text-[11px] font-medium text-gray-500 flex items-center gap-1">
                             <i class="far fa-calendar-alt"></i> ${dateStr}
                         </div>
                     </div>
                 </div>
-                
-                <!-- Description -->
-                <p class="text-gray-600 text-sm mb-6 whitespace-pre-line leading-relaxed flex-grow">${escapeHTML(topic.description)}</p>
-                
-                <!-- Resources Area -->
+                <p class="text-gray-600 text-[13px] mb-5 whitespace-pre-line leading-relaxed flex-grow">${topic.description}</p>
                 <div class="mt-auto">
-                    <h4 class="text-xs font-semibold text-gray-700 mb-2">Resources:</h4>
-                    <div class="flex flex-wrap items-center gap-x-4 gap-y-2 text-xs">
-                        ${resourceHtml}
+                    <h4 class="text-[11px] font-semibold text-gray-500 mb-2">Resources:</h4>
+                    <div class="flex flex-wrap items-center gap-x-4 gap-y-2 text-[12px] text-gray-600 font-medium pb-2">
+                        ${getResourceHTML(topic.resources)}
                     </div>
                 </div>
-                ${adminControlsHtml}
+                ${adminTools}
             `;
-
-            // Bind admin events if applicable
-            if (isAdmin) {
-                setTimeout(() => {
-                    const editBtn = div.querySelector('.edit-btn');
-                    const delBtn = div.querySelector('.delete-btn');
-                    if (editBtn) editBtn.addEventListener('click', () => openEditModal(topic));
-                    if (delBtn) delBtn.addEventListener('click', () => confirmDelete(topic.id));
-                }, 0);
-            }
-
             return div;
         }
 
-        function escapeHTML(str) {
-            if(!str) return '';
-            return str.replace(/[&<>'"]/g, 
-                tag => ({
-                    '&': '&amp;',
-                    '<': '&lt;',
-                    '>': '&gt;',
-                    "'": '&#39;',
-                    '"': '&quot;'
-                }[tag] || tag)
-            );
-        }
-
-        // Event Listeners for Filters
         searchInput.addEventListener('input', renderTopics);
         sortSelect.addEventListener('change', renderTopics);
 
-        let lockClicks = 0;
-        let lockTimeout;
+        // --- Admin Lock Logic ---
+        let lockClicks = 0, lockTimeout;
+        const toast = document.getElementById('notification-toast');
+        const loginModal = document.getElementById('loginModal');
+        const addTopicBtn = document.getElementById('addTopicBtn');
+        const modalOverlay = document.getElementById('modalOverlay');
 
-        // Make hideToast available globally for inline onclick
-        window.hideToast = function() {
-            toast.classList.remove('show');
-        }
-
-        function showToast(title, msg) {
-            document.getElementById('toast-title').innerText = title;
-            document.getElementById('toast-message').innerHTML = msg;
-            toast.classList.add('show');
-            setTimeout(() => {
-                window.hideToast();
-            }, 4000);
-        }
-
-        secretLock.addEventListener('click', () => {
+        document.getElementById('secretLock').addEventListener('click', () => {
             lockClicks++;
-            
             clearTimeout(lockTimeout);
-            lockTimeout = setTimeout(() => {
-                lockClicks = 0;
-            }, 2000); // 2 seconds window for 3 clicks
+            lockTimeout = setTimeout(() => lockClicks = 0, 2000);
 
             if (lockClicks === 1 && !isAdmin) {
-                showToast("Admin Page", "This is the admin section.<br><i class='fas fa-lock text-[#F59E0B] mr-1 text-[10px]'></i> Click twice more to login.");
+                toast.classList.add('show');
+                setTimeout(() => toast.classList.remove('show'), 4000);
             } else if (lockClicks === 3) {
                 lockClicks = 0;
-                window.hideToast(); // Hide toast if showing
-                if (!isAdmin) {
-                    showModal(loginModal);
-                } else {
-                    // If already admin, clicking 3 times logs out
+                toast.classList.remove('show');
+                if (!isAdmin) showModal('loginModal');
+                else {
                     isAdmin = false;
                     addTopicBtn.classList.add('hidden');
-                    showCustomAlert("Logged Out", "You have been logged out of admin mode.", "info");
-                    renderTopics(); // re-render to hide edit/delete buttons
+                    renderTopics();
+                    alert("Logged out of Admin mode");
                 }
             }
         });
 
-        const loginEmail = document.getElementById('loginEmail');
-        const loginPassword = document.getElementById('loginPassword');
-        const loginError = document.getElementById('loginError');
-        const loginSubmitBtn = document.getElementById('loginSubmitBtn');
+        // --- Modals Logic ---
+        function showModal(id) {
+            modalOverlay.classList.remove('hidden');
+            modalOverlay.classList.add('flex');
+            document.querySelectorAll('#modalOverlay > div').forEach(d => d.classList.add('hidden'));
+            document.getElementById(id).classList.remove('hidden');
+        }
 
-        loginSubmitBtn.addEventListener('click', () => {
-            const email = loginEmail.value.trim();
-            const pass = loginPassword.value;
+        function hideModals() {
+            modalOverlay.classList.add('hidden');
+            modalOverlay.classList.remove('flex');
+        }
 
-            if (email === 'admin123@maom.com' && pass === 'relax') {
+        document.querySelectorAll('.close-modal').forEach(btn => btn.addEventListener('click', hideModals));
+
+        // --- Login ---
+        document.getElementById('loginSubmitBtn').addEventListener('click', () => {
+            if (document.getElementById('loginEmail').value === 'admin123@maom.com' && 
+                document.getElementById('loginPassword').value === 'relax') {
                 isAdmin = true;
-                hideModal();
-                loginEmail.value = '';
-                loginPassword.value = '';
-                loginError.classList.add('hidden');
+                hideModals();
                 addTopicBtn.classList.remove('hidden');
-                
-                renderTopics(); // Refresh UI to show admin controls
+                document.getElementById('loginEmail').value = '';
+                document.getElementById('loginPassword').value = '';
+                document.getElementById('loginError').classList.add('hidden');
+                renderTopics();
             } else {
-                loginError.classList.remove('hidden');
-                loginModal.classList.add('animate-shake');
-                setTimeout(() => loginModal.classList.remove('animate-shake'), 500);
+                document.getElementById('loginError').classList.remove('hidden');
             }
         });
 
-        const style = document.createElement('style');
-        style.innerHTML = `
-            @keyframes shake {
-                0%, 100% { transform: translateX(0) scale(0.95); }
-                25% { transform: translateX(-5px) scale(0.95); }
-                75% { transform: translateX(5px) scale(0.95); }
-            }
-            .animate-shake { animation: shake 0.3s ease-in-out; }
-        `;
-        document.head.appendChild(style);
-
+        // --- Add/Edit Topic ---
+        const topicTitle = document.getElementById('topicTitle');
+        const topicDesc = document.getElementById('topicDesc');
+        const topicFile = document.getElementById('topicFile');
+        const topicUrl = document.getElementById('topicUrl');
+        const editTopicId = document.getElementById('editTopicId');
 
         addTopicBtn.addEventListener('click', () => {
             document.getElementById('topicModalTitle').innerText = "Add New Topic";
             editTopicId.value = '';
-            topicTitle.value = '';
-            topicDesc.value = '';
-            resetResourceInputs();
-            showModal(topicModal);
+            topicTitle.value = ''; topicDesc.value = '';
+            topicFile.value = ''; topicUrl.value = ''; base64ResourceData = null;
+            showModal('topicModal');
         });
-
-        function resetResourceInputs() {
-            topicFile.value = '';
-            topicUrl.value = '';
-            base64ResourceData = null;
-            fileError.classList.add('hidden');
-            resourcePreview.classList.add('hidden');
-        }
 
         topicFile.addEventListener('change', (e) => {
             const file = e.target.files[0];
             if (!file) return;
-
-            if (file.size > 500 * 1024) {
-                fileError.classList.remove('hidden');
-                topicFile.value = '';
-                base64ResourceData = null;
-                return;
-            }
-            fileError.classList.add('hidden');
-
             const reader = new FileReader();
             reader.onload = (event) => {
                 base64ResourceData = event.target.result;
-                topicUrl.value = '';
-                previewText.innerText = file.name;
-                resourcePreview.classList.remove('hidden');
+                topicUrl.value = ''; // clear url if file uploaded
             };
             reader.readAsDataURL(file);
         });
@@ -732,158 +441,59 @@
         topicUrl.addEventListener('input', () => {
             if (topicUrl.value.trim() !== '') {
                 topicFile.value = '';
-                base64ResourceData = topicUrl.value.trim();
-                previewText.innerText = "External URL";
-                resourcePreview.classList.remove('hidden');
-            } else {
                 base64ResourceData = null;
-                resourcePreview.classList.add('hidden');
-            }
-        });
-        
-        clearResourceBtn.addEventListener('click', resetResourceInputs);
-
-        saveTopicBtn.addEventListener('click', async () => {
-            const title = topicTitle.value.trim();
-            const desc = topicDesc.value.trim();
-            const id = editTopicId.value;
-
-            if (!title || !desc) {
-                showCustomAlert("Required Fields", "Title and Description cannot be empty.", "error");
-                return;
-            }
-
-            const payload = {
-                title: title,
-                description: desc,
-                resourceData: base64ResourceData || null,
-            };
-
-            const originalText = saveTopicBtn.innerHTML;
-            saveTopicBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
-            saveTopicBtn.disabled = true;
-
-            try {
-                if (id) {
-                    const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'topics', id);
-                    await updateDoc(docRef, payload);
-                } else {
-                    payload.createdAt = Date.now();
-                    await addDoc(topicsRef, payload);
-                }
-                hideModal();
-            } catch (error) {
-                console.error("Save error:", error);
-                showCustomAlert("Error", "Failed to save topic.", "error");
-            } finally {
-                saveTopicBtn.innerHTML = '<i class="fas fa-save"></i> Save Topic';
-                saveTopicBtn.disabled = false;
             }
         });
 
-        function openEditModal(topic) {
+        document.getElementById('saveTopicBtn').addEventListener('click', () => {
+            if (!topicTitle.value.trim() || !topicDesc.value.trim()) return alert("Title and Description required!");
+            
+            let finalRes = base64ResourceData || topicUrl.value.trim() || 'mock_none';
+            
+            if (editTopicId.value) {
+                const index = allTopics.findIndex(t => t.id === editTopicId.value);
+                allTopics[index].title = topicTitle.value.trim();
+                allTopics[index].description = topicDesc.value.trim();
+                if(topicFile.value || topicUrl.value) allTopics[index].resources = finalRes;
+            } else {
+                allTopics.push({
+                    id: Date.now().toString(),
+                    title: topicTitle.value.trim(),
+                    description: topicDesc.value.trim(),
+                    createdAt: Date.now(),
+                    resources: finalRes
+                });
+            }
+            saveToLocalStorage();
+            hideModals();
+            renderTopics();
+        });
+
+        window.editTopic = function(id) {
+            const topic = allTopics.find(t => t.id === id);
             document.getElementById('topicModalTitle').innerText = "Edit Topic";
             editTopicId.value = topic.id;
-            topicTitle.value = topic.title || '';
-            topicDesc.value = topic.description || '';
-            
-            resetResourceInputs();
-            
-            if (topic.resourceData) {
-                base64ResourceData = topic.resourceData;
-                if (topic.resourceData.startsWith('data:')) {
-                    previewText.innerText = "Existing File Attachment";
-                } else if (topic.resourceData.startsWith('mock_')) {
-                    previewText.innerText = "Mock Resources Attached";
-                } else {
-                    topicUrl.value = topic.resourceData;
-                    previewText.innerText = "Existing URL Link";
-                }
-                resourcePreview.classList.remove('hidden');
-            }
-            
-            showModal(topicModal);
-        }
+            topicTitle.value = topic.title;
+            topicDesc.value = topic.description;
+            topicFile.value = ''; topicUrl.value = ''; base64ResourceData = null;
+            showModal('topicModal');
+        };
 
-        function confirmDelete(id) {
+        // --- Delete ---
+        window.deletePrompt = function(id) {
             itemToDelete = id;
-            showModal(confirmModal);
-        }
+            showModal('confirmModal');
+        };
 
-        document.getElementById('confirmDeleteBtn').addEventListener('click', async () => {
-            if (!itemToDelete || !isAdmin) return;
-            
-            const btn = document.getElementById('confirmDeleteBtn');
-            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
-            btn.disabled = true;
-
-            try {
-                const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'topics', itemToDelete);
-                await deleteDoc(docRef);
-                hideModal();
-            } catch (error) {
-                console.error("Delete error:", error);
-                showCustomAlert("Error", "Failed to delete topic.", "error");
-            } finally {
-                btn.innerHTML = 'Delete';
-                btn.disabled = false;
-                itemToDelete = null;
-            }
+        document.getElementById('confirmDeleteBtn').addEventListener('click', () => {
+            allTopics = allTopics.filter(t => t.id !== itemToDelete);
+            saveToLocalStorage();
+            hideModals();
+            renderTopics();
         });
 
-        function showModal(modalElement) {
-            modalOverlay.classList.remove('hidden');
-            modalOverlay.classList.add('flex');
-            
-            [loginModal, topicModal, confirmModal, alertModal].forEach(m => m.classList.add('hidden'));
-            
-            modalElement.classList.remove('hidden');
-            void modalOverlay.offsetWidth; // trigger reflow
-            
-            modalOverlay.classList.remove('opacity-0');
-            modalElement.classList.remove('scale-95');
-            modalElement.classList.add('scale-100');
-        }
-
-        function hideModal() {
-            modalOverlay.classList.add('opacity-0');
-            
-            const visibleModal = [loginModal, topicModal, confirmModal, alertModal].find(m => !m.classList.contains('hidden'));
-            if (visibleModal) {
-                visibleModal.classList.remove('scale-100');
-                visibleModal.classList.add('scale-95');
-            }
-
-            setTimeout(() => {
-                modalOverlay.classList.add('hidden');
-                modalOverlay.classList.remove('flex');
-            }, 300);
-        }
-
-        function showCustomAlert(title, message, type = 'info') {
-            document.getElementById('alertTitle').innerText = title;
-            document.getElementById('alertMessage').innerText = message;
-            
-            const iconWrap = document.getElementById('alertIcon');
-            if (type === 'error') {
-                iconWrap.className = 'w-14 h-14 rounded-full flex items-center justify-center mx-auto mb-4 bg-red-50 text-red-500 border border-red-100';
-                iconWrap.innerHTML = '<i class="fas fa-times-circle text-2xl"></i>';
-            } else {
-                iconWrap.className = 'w-14 h-14 rounded-full flex items-center justify-center mx-auto mb-4 bg-blue-50 text-blue-500 border border-blue-100';
-                iconWrap.innerHTML = '<i class="fas fa-info-circle text-2xl"></i>';
-            }
-            showModal(alertModal);
-        }
-
-        closeButtons.forEach(btn => {
-            btn.addEventListener('click', hideModal);
-        });
-
-        modalOverlay.addEventListener('click', (e) => {
-            if (e.target === modalOverlay) {
-                hideModal();
-            }
-        });
+        // Run
+        initApp();
     </script>
 </body>
 </html>
