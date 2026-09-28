@@ -1,4 +1,3 @@
-no```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -19,9 +18,10 @@ no```html
                 extend: {
                     fontFamily: { sans: ['Inter', 'sans-serif'] },
                     colors: {
-                        primary: '#1a365d',
+                        primary: '#1e3a8a',
                         blueBtn: '#2563eb',
-                        blueBtnHover: '#1d4ed8'
+                        blueBtnHover: '#1d4ed8',
+                        bgGray: '#f1f5f9'
                     }
                 }
             }
@@ -31,12 +31,11 @@ no```html
     <style>
         body {
             font-family: 'Inter', sans-serif;
-            background-color: #F3F4F6; 
-            color: #1f2937;
-            overflow-x: hidden;
+            background-color: #f8fafc; 
+            color: #1e293b;
         }
         
-        /* Mountain Background */
+        /* Mountain Header */
         .hero-pattern {
             background-image: url('https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?q=80&w=2070&auto=format&fit=crop');
             background-size: cover;
@@ -44,11 +43,12 @@ no```html
         }
 
         .hero-overlay {
-            background: linear-gradient(to bottom, rgba(255, 230, 200, 0.4) 0%, rgba(255, 255, 255, 0.7) 50%, #F3F4F6 100%);
+            background: linear-gradient(to bottom, rgba(255, 255, 255, 0.4) 0%, rgba(255, 255, 255, 0.9) 80%, #f8fafc 100%);
         }
-        
-        .topic-card { transition: all 0.2s ease-in-out; }
-        .topic-card:hover { transform: translateY(-2px); box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1); }
+
+        /* Card Hover Effects */
+        .topic-card { transition: all 0.2s ease-in-out; border-radius: 16px; }
+        .topic-card:hover { transform: translateY(-4px); box-shadow: 0 12px 20px -5px rgba(0, 0, 0, 0.08); }
 
         /* Custom Toasts */
         .toast-popup {
@@ -56,130 +56,294 @@ no```html
             transition: bottom 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
         }
         .toast-popup.show { bottom: 24px; }
+        
+        .line-clamp-2 {
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;  
+            overflow: hidden;
+        }
     </style>
 </head>
 <body class="antialiased min-h-screen relative flex flex-col">
 
-    <!-- Header Section -->
-    <header class="relative hero-pattern h-[350px] md:h-[420px] flex flex-col items-center justify-center text-center p-6">
+    <!-- Scenic Header -->
+    <header class="relative hero-pattern h-[380px] md:h-[450px] flex flex-col items-center justify-center text-center px-4 pt-10">
         <div class="absolute inset-0 hero-overlay z-0"></div>
         
-        <!-- Secret Lock -->
-        <div id="secretLock" class="absolute top-4 right-6 cursor-pointer p-2 z-50 transition-opacity opacity-50 hover:opacity-100" title="Secret Area">
-            <i class="fas fa-lock text-gray-800 text-xl"></i>
+        <!-- Secret Lock for Admin -->
+        <div id="secretLock" class="absolute top-4 right-6 cursor-pointer p-3 z-50 transition-opacity opacity-40 hover:opacity-100" title="Admin Access">
+            <i id="secretLockIcon" class="fas fa-lock text-gray-800 text-xl"></i>
         </div>
 
-        <div class="z-10 flex flex-col items-center mt-6">
-            <div class="mb-3 text-primary">
+        <div class="z-10 flex flex-col items-center max-w-3xl">
+            <div class="mb-4 text-blue-800">
                 <i class="fas fa-graduation-cap text-5xl"></i>
             </div>
-            <p class="text-lg md:text-xl font-bold tracking-wide mb-1 text-primary">Welcome to webpage of</p>
-            <h1 class="text-6xl md:text-8xl font-extrabold mb-2 tracking-tight text-primary drop-shadow-sm">
+            <p class="text-xl md:text-2xl font-bold tracking-wide mb-2 text-blue-900">Welcome to webpage of</p>
+            <h1 class="text-6xl md:text-8xl font-extrabold mb-3 tracking-tight text-blue-900 drop-shadow-sm">
                 CSE - H
             </h1>
-            <div class="flex items-center justify-center gap-4 mb-5">
-                <div class="h-[2px] w-10 bg-primary"></div>
-                <h2 class="text-2xl md:text-3xl font-bold text-primary tracking-wide">Team -10</h2>
-                <div class="h-[2px] w-10 bg-primary"></div>
+            <div class="flex items-center justify-center gap-4 mb-6">
+                <div class="h-[2px] w-12 md:w-20 bg-blue-800"></div>
+                <h2 class="text-2xl md:text-4xl font-bold text-blue-800 tracking-wide">Team -10</h2>
+                <div class="h-[2px] w-12 md:w-20 bg-blue-800"></div>
             </div>
-            <p class="text-gray-800 font-semibold tracking-wide text-sm md:text-base">
+            <p class="text-gray-700 font-semibold tracking-wide text-sm md:text-base bg-white/50 px-6 py-2 rounded-full backdrop-blur-sm shadow-sm">
                 Learn &nbsp;&bull;&nbsp; Share &nbsp;&bull;&nbsp; Grow Together
             </p>
-            <div class="mt-4 text-primary text-xl">
+            <div class="mt-4 text-blue-800 text-2xl">
                 <i class="fas fa-users"></i>
             </div>
         </div>
     </header>
 
-    <!-- Main Content -->
+    <!-- Main Content Area -->
     <main class="flex-grow container mx-auto px-4 py-8 max-w-[1200px] relative z-10 -mt-6">
         
-        <!-- Toolbar -->
-        <div class="flex flex-col md:flex-row justify-between items-center gap-4 mb-8 bg-white p-4 rounded-xl shadow-sm border border-gray-100">
+        <!-- Toolbar (Search & Sort) -->
+        <div class="flex flex-col md:flex-row justify-between items-center gap-4 mb-8 bg-white p-3 rounded-2xl shadow-sm border border-gray-100">
             <!-- Search -->
             <div class="relative w-full md:w-1/2">
                 <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
                     <i class="fas fa-search text-gray-400"></i>
                 </div>
-                <input type="text" id="searchInput" placeholder="Search by title..." class="w-full pl-11 pr-4 py-2.5 rounded-lg border border-gray-200 focus:border-blue-400 focus:ring-2 focus:ring-blue-100 outline-none text-sm font-medium transition-all">
+                <input type="text" id="searchInput" placeholder="Search by title..." class="w-full pl-11 pr-4 py-3 rounded-xl border border-gray-100 bg-gray-50 focus:bg-white focus:border-blue-400 focus:ring-2 focus:ring-blue-100 outline-none text-sm font-medium transition-all">
             </div>
             
             <div class="flex w-full md:w-auto items-center gap-3">
                 <!-- Sort -->
-                <div class="w-full md:w-auto flex items-center bg-white rounded-lg px-3 relative border border-gray-200 hover:border-gray-300 transition-all">
-                    <i class="far fa-calendar-alt text-gray-500 absolute left-3"></i>
-                    <select id="sortSelect" class="w-full md:w-auto pl-8 pr-8 py-2.5 rounded-lg focus:outline-none bg-transparent text-sm font-medium text-gray-700 appearance-none cursor-pointer">
+                <div class="w-full md:w-auto flex items-center bg-gray-50 rounded-xl px-3 relative border border-gray-100 hover:border-gray-200 transition-all">
+                    <i class="far fa-calendar-alt text-gray-500 absolute left-4"></i>
+                    <select id="sortSelect" class="w-full md:w-auto pl-10 pr-10 py-3 rounded-xl focus:outline-none bg-transparent text-sm font-medium text-gray-700 appearance-none cursor-pointer">
                         <option value="newest">Sort by: Date Uploaded</option>
                         <option value="oldest">Sort by: Oldest First</option>
                     </select>
-                    <i class="fas fa-chevron-down text-gray-400 absolute right-3 pointer-events-none text-xs"></i>
+                    <i class="fas fa-chevron-down text-gray-400 absolute right-4 pointer-events-none text-xs"></i>
                 </div>
 
                 <!-- Add Button (Admin Only) -->
-                <button id="addTopicBtn" class="hidden w-full md:w-auto bg-blueBtn text-white px-6 py-2.5 rounded-lg hover:bg-blueBtnHover transition font-medium shadow-md whitespace-nowrap text-sm flex items-center justify-center">
+                <button id="addTopicBtn" class="hidden w-full md:w-auto bg-blueBtn text-white px-6 py-3 rounded-xl hover:bg-blueBtnHover transition font-semibold shadow-md whitespace-nowrap text-sm flex items-center justify-center">
                     <i class="fas fa-plus mr-2"></i> Add Topic
                 </button>
             </div>
         </div>
 
         <!-- Topics Feed -->
-        <div id="topicsContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+        <div id="topicsContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <!-- Content will be injected here via JS -->
+        </div>
         
         <!-- Empty State -->
-        <div id="emptyState" class="hidden flex-col items-center justify-center py-20 text-gray-500 bg-white rounded-2xl shadow-sm border border-gray-100 mt-4">
-            <i class="fas fa-folder-open text-5xl mb-4 text-gray-300"></i>
-            <p class="text-lg font-medium text-gray-800">No topics uploaded yet.</p>
+        <div id="emptyState" class="hidden flex-col items-center justify-center py-20 text-gray-500 bg-white rounded-3xl shadow-sm border border-gray-100 mt-4">
+            <i class="fas fa-folder-open text-6xl mb-4 text-gray-200"></i>
+            <p class="text-xl font-medium text-gray-700">No topics found.</p>
+            <p class="text-sm text-gray-400 mt-1">Check back later or adjust your search.</p>
         </div>
     </main>
 
     <!-- Footer -->
-    <footer class="bg-[#2D3748] text-gray-300 py-4 text-center text-sm flex flex-col md:flex-row items-center justify-center px-8 mt-auto">
-        <div class="font-medium">CSE - H <span class="mx-2 text-gray-500">|</span> Team -10 <i class="fas fa-heart text-gray-400 text-xs ml-1"></i></div>
-        <div class="hidden md:block mx-4 text-gray-500">|</div>
-        <div class="flex items-center gap-2 opacity-80 italic text-xs mt-2 md:mt-0"><i class="fas fa-seedling"></i> Better Together</div>
+    <footer class="bg-[#1e293b] text-gray-300 py-6 text-center text-sm flex flex-col items-center justify-center px-8 mt-auto">
+        <div class="flex items-center justify-center gap-4">
+            <div class="font-semibold tracking-wider">CSE - H</div>
+            <div class="w-1 h-1 bg-gray-500 rounded-full"></div>
+            <div class="font-semibold tracking-wider">Team -10</div>
+            <i class="fas fa-heart text-gray-400 text-xs ml-1"></i>
+        </div>
+        <div class="flex items-center gap-2 opacity-60 italic text-xs mt-3"><i class="fas fa-seedling"></i> Better Together</div>
     </footer>
 
     <!-- Modals Overlay -->
-    <div id="modalOverlay" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 hidden flex-col items-center justify-center p-4">
+    <div id="modalOverlay" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 hidden flex-col items-center justify-center p-4">
         
         <!-- Admin Login Modal -->
-        <div id="loginModal" class="bg-white rounded-2xl shadow-2xl w-full max-w-[320px] p-6 hidden relative">
-            <button class="close-modal absolute top-3 right-4 text-gray-400 hover:text-gray-600"><i class="fas fa-times text-lg"></i></button>
-            <div class="flex items-center gap-2 mb-6">
-                <i class="fas fa-lock text-primary text-lg"></i>
-                <h2 class="text-lg font-bold text-gray-800">Admin Login</h2>
+        <div id="loginModal" class="bg-white rounded-2xl shadow-2xl w-full max-w-[340px] p-8 hidden relative transform transition-all">
+            <button class="close-modal absolute top-4 right-4 text-gray-400 hover:text-gray-600"><i class="fas fa-times text-lg"></i></button>
+            <div class="flex flex-col items-center gap-2 mb-6">
+                <div class="w-12 h-12 bg-blue-50 rounded-full flex items-center justify-center mb-1">
+                    <i class="fas fa-lock text-blue-600 text-xl"></i>
+                </div>
+                <h2 class="text-xl font-bold text-gray-800">Admin Login</h2>
             </div>
             <div class="space-y-4">
                 <div class="relative">
-                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center"><i class="far fa-user text-gray-400 text-sm"></i></div>
-                    <input type="email" id="loginEmail" class="w-full pl-9 pr-4 py-2 border border-gray-300 rounded-lg outline-none text-sm focus:border-blue-500 transition-colors" placeholder="Email (admin123@maom.com)">
+                    <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none"><i class="far fa-user text-gray-400 text-sm"></i></div>
+                    <input type="email" id="loginEmail" class="w-full pl-10 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl outline-none text-sm focus:bg-white focus:border-blue-500 transition-colors" placeholder="admin123@maom.com">
                 </div>
                 <div class="relative">
-                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center"><i class="fas fa-lock text-gray-400 text-xs"></i></div>
-                    <input type="password" id="loginPassword" class="w-full pl-9 pr-4 py-2 border border-gray-300 rounded-lg outline-none text-sm focus:border-blue-500 transition-colors" placeholder="Password (relax)">
+                    <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none"><i class="fas fa-lock text-gray-400 text-sm"></i></div>
+                    <input type="password" id="loginPassword" class="w-full pl-10 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl outline-none text-sm focus:bg-white focus:border-blue-500 transition-colors" placeholder="Password">
                 </div>
-                <div id="loginError" class="text-red-500 text-xs hidden font-medium text-center bg-red-50 p-2 rounded">Invalid credentials.</div>
-                <button id="loginSubmitBtn" class="w-full bg-blueBtn text-white font-medium py-2 rounded-lg hover:bg-blueBtnHover transition text-sm shadow-sm mt-2">Login</button>
+                <div id="loginError" class="text-red-500 text-xs hidden font-medium text-center bg-red-50 p-2 rounded-lg">Invalid credentials. Try again.</div>
+                <button id="loginSubmitBtn" class="w-full bg-blueBtn text-white font-semibold py-3 rounded-xl hover:bg-blueBtnHover transition shadow-md mt-2">Login</button>
             </div>
         </div>
 
         <!-- Add/Edit Topic Modal -->
-        <div id="topicModal" class="bg-white rounded-2xl shadow-2xl w-full max-w-xl p-6 hidden max-h-[90vh] overflow-y-auto relative">
-            <button class="close-modal absolute top-5 right-5 text-gray-400 hover:text-gray-600"><i class="fas fa-times text-lg"></i></button>
-            <h2 id="topicModalTitle" class="text-xl font-bold text-gray-800 mb-5 border-b pb-3">Add New Topic</h2>
+        <div id="topicModal" class="bg-white rounded-3xl shadow-2xl w-full max-w-xl p-8 hidden max-h-[90vh] overflow-y-auto relative">
+            <button class="close-modal absolute top-6 right-6 text-gray-400 hover:text-gray-600"><i class="fas fa-times text-xl"></i></button>
+            <h2 id="topicModalTitle" class="text-2xl font-bold text-gray-800 mb-6 border-b pb-4">Add New Topic</h2>
             <input type="hidden" id="editTopicId" value="">
             
-            <div class="space-y-4">
+            <div class="space-y-5">
                 <div>
-                    <label class="block text-sm font-semibold text-gray-700 mb-1">Topic Title *</label>
-                    <input type="text" id="topicTitle" class="w-full px-3 py-2 border border-gray-300 rounded-lg outline-none text-sm focus:border-blue-500" placeholder="e.g. Python Basics">
+                    <label class="block text-sm font-bold text-gray-700 mb-2">Topic Title *</label>
+                    <input type="text" id="topicTitle" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl outline-none text-sm focus:bg-white focus:border-blue-500" placeholder="e.g. Python Basics">
                 </div>
                 <div>
-                    <label class="block text-sm font-semibold text-gray-700 mb-1">Description *</label>
-                    <textarea id="topicDesc" rows="3" class="w-full px-3 py-2 border border-gray-300 rounded-lg outline-none text-sm focus:border-blue-500" placeholder="Briefly describe the topic..."></textarea>
+                    <label class="block text-sm font-bold text-gray-700 mb-2">Description *</label>
+                    <textarea id="topicDesc" rows="3" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl outline-none text-sm focus:bg-white focus:border-blue-500" placeholder="Briefly describe the topic..."></textarea>
                 </div>
                 <div>
-                    <label class="block text-sm font-semibold text-gray-700 mb-1">Resources (Comma separated filenames)</label>
+                    <label class="block text-sm font-bold text-gray-700 mb-2">Resources (Comma separated filenames)</label>
+                    <input type="text" id="topicUrl" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl outline-none text-sm focus:bg-white focus:border-blue-500" placeholder="e.g. Notes.pdf, code.png, intro.mp4">
+                    <p class="text-xs text-gray-500 mt-2 font-medium"><i class="fas fa-info-circle text-blue-500 mr-1"></i> Type file names to automatically display format icons (pdf, png, mp4, doc).</p>
+                </div>
+            </div>
+
+            <div class="flex justify-end gap-3 mt-8 pt-6 border-t border-gray-100">
+                <button class="close-modal px-6 py-2.5 rounded-xl text-gray-600 hover:bg-gray-100 font-bold text-sm transition-colors">Cancel</button>
+                <button id="saveTopicBtn" class="px-8 py-2.5 rounded-xl bg-blueBtn text-white hover:bg-blueBtnHover font-bold text-sm shadow-md transition-colors">
+                    Save Topic
+                </button>
+            </div>
+        </div>
+
+        <!-- Custom Delete Confirmation Modal -->
+        <div id="deleteModal" class="bg-white rounded-3xl shadow-2xl w-full max-w-[340px] p-8 hidden relative text-center">
+            <div class="w-16 h-16 bg-red-50 rounded-full flex items-center justify-center mx-auto mb-4">
+                <i class="fas fa-trash-alt text-red-500 text-2xl"></i>
+            </div>
+            <h2 class="text-xl font-bold text-gray-800 mb-2">Delete Topic?</h2>
+            <p class="text-sm text-gray-500 mb-8 font-medium">Are you sure you want to remove this topic? This action cannot be undone.</p>
+            <div class="flex justify-center gap-3">
+                <button class="close-modal flex-1 py-3 rounded-xl text-gray-700 bg-gray-100 hover:bg-gray-200 font-bold text-sm transition-colors">Cancel</button>
+                <button id="confirmDeleteBtn" class="flex-1 py-3 rounded-xl bg-red-500 text-white hover:bg-red-600 font-bold text-sm shadow-md transition-colors">Delete</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- UI Message Toasts -->
+    <div id="ui-toast" class="toast-popup fixed right-6 bg-gray-900 text-white px-5 py-4 rounded-xl shadow-2xl z-[60] flex items-center gap-3 min-w-[250px]">
+        <div id="ui-toast-icon" class="text-green-400 text-xl"><i class="fas fa-check-circle"></i></div>
+        <div id="ui-toast-msg" class="font-semibold text-sm">Action successful</div>
+    </div>
+
+    <div id="admin-warning-toast" class="toast-popup fixed right-6 bg-gray-900 border border-gray-800 text-white p-5 rounded-2xl shadow-2xl z-[60] flex items-start gap-4 max-w-[320px]">
+        <div class="text-yellow-500 text-2xl mt-0.5"><i class="fas fa-exclamation-triangle"></i></div>
+        <div>
+            <div class="font-bold text-base mb-1">Admin Page</div>
+            <div class="text-sm text-gray-300 leading-relaxed">This is the admin section.<br><i class="fas fa-lock text-xs mr-1 text-yellow-500"></i>Please login to continue.</div>
+        </div>
+        <button id="closeAdminWarning" class="text-gray-400 hover:text-white ml-auto"><i class="fas fa-times"></i></button>
+    </div>
+
+    <!-- FIREBASE AND APP LOGIC -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getFirestore, doc, setDoc, deleteDoc, onSnapshot, collection } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // Firebase Configuration (from the screenshot)
+        const firebaseConfig = {
+            apiKey: "AIzaSyAAzzTUCdAVzckrFR234CZxHTusgXlPxgw",
+            authDomain: "team10-d5285.firebaseapp.com",
+            projectId: "team10-d5285",
+            storageBucket: "team10-d5285.firebasestorage.app",
+            messagingSenderId: "816289915063",
+            appId: "1:816289915063:web:7d74aac74196fce7d8ad32"
+        };
+
+        let db;
+        let allTopics = [];
+        let isAdmin = false;
+        let currentTopicToDelete = null;
+
+        const topicsContainer = document.getElementById('topicsContainer');
+        const emptyState = document.getElementById('emptyState');
+        const searchInput = document.getElementById('searchInput');
+        const sortSelect = document.getElementById('sortSelect');
+        const modalOverlay = document.getElementById('modalOverlay');
+
+        // Initialize Firebase
+        try {
+            const app = initializeApp(firebaseConfig);
+            db = getFirestore(app);
+            
+            const topicsRef = collection(db, 'public_topics');
+            onSnapshot(topicsRef, (snapshot) => {
+                allTopics = [];
+                snapshot.forEach(doc => {
+                    allTopics.push({ id: doc.id, ...doc.data() });
+                });
+                if(allTopics.length === 0) loadDummyData();
+                else renderTopics();
+            }, (error) => {
+                console.error("Firebase Read Error:", error);
+                loadDummyData(); // Fallback to local data if there's an error
+            });
+        } catch (error) {
+            console.error("Firebase init failed:", error);
+            loadDummyData();
+        }
+
+        // Fallback Demo Data
+        function loadDummyData() {
+            allTopics = [
+                { id: '1', title: 'Python Basics', description: 'Basic python concepts, syntax and examples for beginners.', resources: 'Notes.pdf, code.png, intro.mp4', created_at: Date.now() - 500000000 },
+                { id: '2', title: 'Data Structures', description: 'Important concepts of arrays, linked lists, stack and queue.', resources: 'DS_Notes.pdf, lecture.mp4', created_at: Date.now() - 400000000 },
+                { id: '3', title: 'Web Development', description: 'HTML, CSS and JavaScript basics with examples.', resources: 'webdev.png, guide.pdf', created_at: Date.now() - 300000000 },
+                { id: '4', title: 'Database Systems', description: 'Introduction to DBMS, SQL queries and normalization.', resources: 'dbms.mp4, notes.pdf', created_at: Date.now() - 200000000 },
+                { id: '5', title: 'Project Ideas', description: 'Some interesting project ideas for CSE students.', resources: 'ideas.png, list.pdf', created_at: Date.now() - 100000000 },
+                { id: '6', title: 'Machine Learning', description: 'Overview of ML, types and real world applications.', resources: '', created_at: Date.now() }
+            ];
+            
+            const local = localStorage.getItem('team10_topics');
+            if(local) {
+                try { allTopics = JSON.parse(local); } catch(e){}
+            }
+            renderTopics();
+        }
+
+        function saveLocallyIfNoDb() {
+            localStorage.setItem('team10_topics', JSON.stringify(allTopics));
+        }
+
+        function renderTopics() {
+            const query = searchInput.value.toLowerCase().trim();
+            const sort = sortSelect.value;
+            
+            let filtered = allTopics.filter(t => t.title.toLowerCase().includes(query) || t.description.toLowerCase().includes(query));
+            filtered.sort((a, b) => sort === 'newest' ? b.created_at - a.created_at : a.created_at - b.created_at);
+
+            topicsContainer.innerHTML = '';
+            
+            if (filtered.length === 0) {
+                topicsContainer.classList.add('hidden');
+                emptyState.classList.remove('hidden');
+                emptyState.style.display = 'flex';
+            } else {
+                topicsContainer.classList.remove('hidden');
+                emptyState.style.display = 'none';
+                filtered.forEach(topic => topicsContainer.appendChild(createTopicCard(topic)));
+            }
+        }
+
+        function getIconProps(title) {
+            const t = title.toLowerCase();
+            if (t.includes('python')) return { icon: 'fab fa-python', color: '#eab308' }; 
+            if (t.includes('data structure') || t.includes('ds')) return { icon: 'fas fa-project-diagram', color: '#22c55e' };
+            if (t.includes('web')) return { icon: 'fas fa-globe', color: '#3b82f6' }; 
+            if (t.includes('database') || t.includes('sql')) return { icon: 'fas fa-database', color: '#3b82f6' };
+            if (t.includes('idea') || t.includes('project')) return { icon: 'far fa-lightbulb', color: '#f59e0b' }; 
+            if (t.includes('machine learning') || t.includes('ai')) return { icon: 'fas fa-brain', color: '#475569' }; 
+            return { icon: 'fas fa-book', color: '#6366f1' }; 
+        }
+
+        function getResourceHTML(resString) {
+            if (!resString || resString.trim() === '') {
+                return `<div class="w-full text-center py-3 border border-dashed border-gray-200 rounded-xl text-xs font-semibold text-gray-500 bg-gray-50 mt-2 flex items-center justify-center gap-2"><i class="far fa-folder-open text-gray-400"></i> No resource available... 😞</div>`;
+            }
+            const resources = resString.split(',').map(s  class="block text-sm font-semibold text-gray-700 mb-1">Resources (Comma separated filenames)</label>
                     <input type="text" id="topicUrl" class="w-full px-3 py-2 border border-gray-300 rounded-lg outline-none text-sm focus:border-blue-500" placeholder="e.g. Notes.pdf, code.png, intro.mp4">
                     <p class="text-xs text-gray-500 mt-1"><i class="fas fa-info-circle"></i> Type file names to display icons (pdf, png, mp4, doc).</p>
                 </div>
