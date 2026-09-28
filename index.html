@@ -77,7 +77,7 @@
 
         <div class="z-10 flex flex-col items-center max-w-3xl">
             <div class="mb-4 text-blue-800">
-                <i class="fas fa-graduation-cap text-5xl"></i>
+                <i class="fas fa-graduation-cap text-5xl drop-shadow-sm"></i>
             </div>
             <p class="text-xl md:text-2xl font-bold tracking-wide mb-2 text-blue-900">Welcome to webpage of</p>
             <h1 class="text-6xl md:text-8xl font-extrabold mb-3 tracking-tight text-blue-900 drop-shadow-sm">
@@ -187,13 +187,13 @@
                     <input type="text" id="topicTitle" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl outline-none text-sm focus:bg-white focus:border-blue-500" placeholder="e.g. Python Basics">
                 </div>
                 <div>
-                    <label class="block text-sm font-bold text-gray-700 mb-2">Description * (Paste YouTube/Drive links here)</label>
+                    <label class="block text-sm font-bold text-gray-700 mb-2">Description * (Paste YouTube/Drive links here for big files)</label>
                     <textarea id="topicDesc" rows="4" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl outline-none text-sm focus:bg-white focus:border-blue-500" placeholder="Briefly describe the topic. If you have large files like 2GB videos, upload them to Google Drive or YouTube and paste the link here!"></textarea>
                 </div>
                 <div>
-                    <label class="block text-sm font-bold text-gray-700 mb-2">Attachments (Small Files)</label>
+                    <label class="block text-sm font-bold text-gray-700 mb-2">Attachments (Small Files Only)</label>
                     <input type="file" id="fileInput" multiple class="block w-full text-sm text-gray-500 file:mr-4 file:py-2.5 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-bold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 transition-all border border-gray-200 rounded-xl p-1 bg-gray-50 cursor-pointer">
-                    <p class="text-xs text-gray-500 mt-2 font-medium leading-relaxed"><i class="fas fa-info-circle text-blue-500 mr-1"></i> Attach photos, documents, or small videos. Users can click to download.<br><i class="fas fa-exclamation-triangle text-yellow-500 mr-1"></i> Cloud storage limit: <strong>500KB total max</strong> per topic.</p>
+                    <p class="text-xs text-gray-500 mt-2 font-medium leading-relaxed"><i class="fas fa-info-circle text-blue-500 mr-1"></i> Attach photos, documents, or small videos. Users can click to download.<br><i class="fas fa-exclamation-triangle text-yellow-500 mr-1"></i> Cloud storage limit: <strong>500KB total max</strong> per topic. (For 2GB videos, paste a Google Drive link in the description above!)</p>
                     <div id="filePreviewContainer" class="flex flex-wrap gap-2 mt-3"></div>
                 </div>
             </div>
@@ -238,7 +238,7 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
         import { getFirestore, doc, setDoc, deleteDoc, onSnapshot, collection } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
 
-        // Your exact Firebase keys from the screenshot
+        // Your exact Firebase keys from the screenshots
         const firebaseConfig = {
             apiKey: "AIzaSyAAzzTUCdAVzckrFR234CZxHTusgXlPxgw",
             authDomain: "team10-d5285.firebaseapp.com",
@@ -268,11 +268,24 @@
             onSnapshot(topicsRef, (snapshot) => {
                 allTopics = [];
                 snapshot.forEach(doc => {
-                    allTopics.push({ id: doc.id, ...doc.data() });
+                    const data = doc.data();
+                    // SAFETY CHECK: Ensure data is not corrupted before adding
+                    if (data && data.title) {
+                        allTopics.push({ 
+                            id: doc.id, 
+                            title: data.title,
+                            description: data.description || '',
+                            attachments: data.attachments || [],
+                            created_at: data.created_at || Date.now()
+                        });
+                    }
                 });
-                // If database is completely empty, show some dummy ones just for aesthetics
-                if(allTopics.length === 0) loadDummyData();
-                else renderTopics();
+                
+                if(allTopics.length === 0) {
+                    loadDummyData();
+                } else {
+                    renderTopics();
+                }
             }, (error) => {
                 console.error("Firebase Read Error:", error);
                 loadDummyData(); // Fallback if database fails to load
@@ -284,48 +297,77 @@
 
         function loadDummyData() {
             allTopics = [
-                { id: '1', title: 'Python Basics', description: 'Basic python concepts, syntax and examples for beginners.', resources: 'Notes.pdf, code.png, intro.mp4', created_at: Date.now() - 500000000 },
-                { id: '2', title: 'Data Structures', description: 'Important concepts of arrays, linked lists, stack and queue.', resources: 'DS_Notes.pdf, lecture.mp4', created_at: Date.now() - 400000000 },
-                { id: '3', title: 'Web Development', description: 'HTML, CSS and JavaScript basics with examples.', resources: 'webdev.png, guide.pdf', created_at: Date.now() - 300000000 },
-                { id: '4', title: 'Database Systems', description: 'Introduction to DBMS, SQL queries and normalization.', resources: 'dbms.mp4, notes.pdf', created_at: Date.now() - 200000000 }
+                { id: '1', title: 'Python Basics', description: 'Basic python concepts, syntax and examples for beginners.', attachments: [], created_at: Date.now() - 500000000 },
+                { id: '2', title: 'Data Structures', description: 'Important concepts of arrays, linked lists, stack and queue.', attachments: [], created_at: Date.now() - 400000000 },
+                { id: '3', title: 'Web Development', description: 'HTML, CSS and JavaScript basics with examples. Check out this video: https://youtube.com', attachments: [], created_at: Date.now() - 300000000 },
+                { id: '4', title: 'Database Systems', description: 'Introduction to DBMS, SQL queries and normalization.', attachments: [], created_at: Date.now() - 200000000 }
             ];
             
-            const local = localStorage.getItem('team10_topics');
-            if(local) {
-                try { allTopics = JSON.parse(local); } catch(e){}
+            try {
+                const local = localStorage.getItem('team10_topics');
+                if(local) {
+                    const parsed = JSON.parse(local);
+                    // Filter out any corrupted local data
+                    allTopics = parsed.filter(t => t && t.title).map(t => ({
+                        ...t,
+                        description: t.description || '',
+                        attachments: t.attachments || [],
+                        created_at: t.created_at || Date.now()
+                    }));
+                }
+            } catch(e) {
+                console.error("Local storage was corrupted, resetting.");
+                localStorage.removeItem('team10_topics');
             }
             renderTopics();
         }
 
         function saveLocallyIfNoDb() {
-            localStorage.setItem('team10_topics', JSON.stringify(allTopics));
+            try {
+                localStorage.setItem('team10_topics', JSON.stringify(allTopics));
+            } catch(e) { console.error(e); }
         }
 
         function renderTopics() {
-            const query = searchInput.value.toLowerCase().trim();
-            const sort = sortSelect.value;
-            
-            let filtered = allTopics.filter(t => t.title.toLowerCase().includes(query) || t.description.toLowerCase().includes(query));
-            filtered.sort((a, b) => sort === 'newest' ? b.created_at - a.created_at : a.created_at - b.created_at);
+            try {
+                const query = searchInput.value.toLowerCase().trim();
+                const sort = sortSelect.value;
+                
+                let filtered = allTopics.filter(t => {
+                    const titleMatch = (t.title || '').toLowerCase().includes(query);
+                    const descMatch = (t.description || '').toLowerCase().includes(query);
+                    return titleMatch || descMatch;
+                });
+                
+                filtered.sort((a, b) => sort === 'newest' ? b.created_at - a.created_at : a.created_at - b.created_at);
 
-            topicsContainer.innerHTML = '';
-            
-            if (filtered.length === 0) {
-                topicsContainer.classList.add('hidden');
-                emptyState.classList.remove('hidden');
-                emptyState.style.display = 'flex';
-            } else {
-                topicsContainer.classList.remove('hidden');
-                emptyState.style.display = 'none';
-                filtered.forEach(topic => topicsContainer.appendChild(createTopicCard(topic)));
+                topicsContainer.innerHTML = '';
+                
+                if (filtered.length === 0) {
+                    topicsContainer.classList.add('hidden');
+                    emptyState.classList.remove('hidden');
+                    emptyState.style.display = 'flex';
+                } else {
+                    topicsContainer.classList.remove('hidden');
+                    emptyState.style.display = 'none';
+                    filtered.forEach(topic => {
+                        try {
+                            topicsContainer.appendChild(createTopicCard(topic));
+                        } catch(err) {
+                            console.error("Failed to render a topic card", err);
+                        }
+                    });
+                }
+            } catch(err) {
+                console.error("Critical rendering error:", err);
             }
         }
 
         function getIconProps(title) {
-            const t = title.toLowerCase();
+            const t = (title || '').toLowerCase();
             if (t.includes('python')) return { icon: 'fab fa-python', color: '#eab308' }; 
             if (t.includes('data structure') || t.includes('ds')) return { icon: 'fas fa-project-diagram', color: '#22c55e' };
-            if (t.includes('web')) return { icon: 'fas fa-globe', color: '#3b82f6' }; 
+            if (t.includes('web') || t.includes('html')) return { icon: 'fas fa-globe', color: '#3b82f6' }; 
             if (t.includes('database') || t.includes('sql')) return { icon: 'fas fa-database', color: '#3b82f6' };
             if (t.includes('idea') || t.includes('project')) return { icon: 'far fa-lightbulb', color: '#f59e0b' }; 
             if (t.includes('machine learning') || t.includes('ai')) return { icon: 'fas fa-brain', color: '#475569' }; 
@@ -337,831 +379,291 @@
             
             if (topic.attachments && topic.attachments.length > 0) {
                 topic.attachments.forEach(file => {
+                    if(!file || !file.name) return; // Safety check
                     let icon = 'fas fa-file-alt'; let color = 'text-gray-500';
                     const lower = file.name.toLowerCase();
                     if(lower.endsWith('.pdf')) { icon = 'far fa-file-pdf'; color = 'text-red-500'; }
-               ont-bold text-gray-800 mb-6 border-b pb-4">Add New Topic</h2>
-            <input type="hidden" id="editTopicId" value="">
-            
-            <div class="space-y-5">
-                <div>
-                    <label class="block text-sm font-bold text-gray-700 mb-2">Topic Title *</label>
-                    <input type="text" id="topicTitle" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl outline-none text-sm focus:bg-white focus:border-blue-500" placeholder="e.g. Python Basics">
-                </div>
-                <div>
-                    <label class="block text-sm font-bold text-gray-700 mb-2">Description *</label>
-                    <textarea id="topicDesc" rows="3" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl outline-none text-sm focus:bg-white focus:border-blue-500" placeholder="Briefly describe the topic..."></textarea>
-                </div>
-                <div>
-                    <label class="block text-sm font-bold text-gray-700 mb-2">Resources (Comma separated filenames)</label>
-                    <input type="text" id="topicUrl" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl outline-none text-sm focus:bg-white focus:border-blue-500" placeholder="e.g. Notes.pdf, code.png, intro.mp4">
-                    <p class="text-xs text-gray-500 mt-2 font-medium"><i class="fas fa-info-circle text-blue-500 mr-1"></i> Type file names to automatically display format icons (pdf, png, mp4, doc).</p>
-                </div>
-            </div>
-
-            <div class="flex justify-end gap-3 mt-8 pt-6 border-t border-gray-100">
-                <button class="close-modal px-6 py-2.5 rounded-xl text-gray-600 hover:bg-gray-100 font-bold text-sm transition-colors">Cancel</button>
-                <button id="saveTopicBtn" class="px-8 py-2.5 rounded-xl bg-blueBtn text-white hover:bg-blueBtnHover font-bold text-sm shadow-md transition-colors">
-                    Save Topic
-                </button>
-            </div>
-        </div>
-
-        <!-- Custom Delete Confirmation Modal -->
-        <div id="deleteModal" class="bg-white rounded-3xl shadow-2xl w-full max-w-[340px] p-8 hidden relative text-center">
-            <div class="w-16 h-16 bg-red-50 rounded-full flex items-center justify-center mx-auto mb-4">
-                <i class="fas fa-trash-alt text-red-500 text-2xl"></i>
-            </div>
-            <h2 class="text-xl font-bold text-gray-800 mb-2">Delete Topic?</h2>
-            <p class="text-sm text-gray-500 mb-8 font-medium">Are you sure you want to remove this topic? This action cannot be undone.</p>
-            <div class="flex justify-center gap-3">
-                <button class="close-modal flex-1 py-3 rounded-xl text-gray-700 bg-gray-100 hover:bg-gray-200 font-bold text-sm transition-colors">Cancel</button>
-                <button id="confirmDeleteBtn" class="flex-1 py-3 rounded-xl bg-red-500 text-white hover:bg-red-600 font-bold text-sm shadow-md transition-colors">Delete</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- UI Message Toasts -->
-    <div id="ui-toast" class="toast-popup fixed right-6 bg-gray-900 text-white px-5 py-4 rounded-xl shadow-2xl z-[60] flex items-center gap-3 min-w-[250px]">
-        <div id="ui-toast-icon" class="text-green-400 text-xl"><i class="fas fa-check-circle"></i></div>
-        <div id="ui-toast-msg" class="font-semibold text-sm">Action successful</div>
-    </div>
-
-    <div id="admin-warning-toast" class="toast-popup fixed right-6 bg-gray-900 border border-gray-800 text-white p-5 rounded-2xl shadow-2xl z-[60] flex items-start gap-4 max-w-[320px]">
-        <div class="text-yellow-500 text-2xl mt-0.5"><i class="fas fa-exclamation-triangle"></i></div>
-        <div>
-            <div class="font-bold text-base mb-1">Admin Page</div>
-            <div class="text-sm text-gray-300 leading-relaxed">This is the admin section.<br><i class="fas fa-lock text-xs mr-1 text-yellow-500"></i>Please login to continue.</div>
-        </div>
-        <button id="closeAdminWarning" class="text-gray-400 hover:text-white ml-auto"><i class="fas fa-times"></i></button>
-    </div>
-
-    <!-- FIREBASE AND APP LOGIC -->
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getFirestore, doc, setDoc, deleteDoc, onSnapshot, collection } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
-
-        // Firebase Configuration (from the screenshot)
-        const firebaseConfig = {
-            apiKey: "AIzaSyAAzzTUCdAVzckrFR234CZxHTusgXlPxgw",
-            authDomain: "team10-d5285.firebaseapp.com",
-            projectId: "team10-d5285",
-            storageBucket: "team10-d5285.firebasestorage.app",
-            messagingSenderId: "816289915063",
-            appId: "1:816289915063:web:7d74aac74196fce7d8ad32"
-        };
-
-        let db;
-        let allTopics = [];
-        let isAdmin = false;
-        let currentTopicToDelete = null;
-
-        const topicsContainer = document.getElementById('topicsContainer');
-        const emptyState = document.getElementById('emptyState');
-        const searchInput = document.getElementById('searchInput');
-        const sortSelect = document.getElementById('sortSelect');
-        const modalOverlay = document.getElementById('modalOverlay');
-
-        // Initialize Firebase
-        try {
-            const app = initializeApp(firebaseConfig);
-            db = getFirestore(app);
-            
-            const topicsRef = collection(db, 'public_topics');
-            onSnapshot(topicsRef, (snapshot) => {
-                allTopics = [];
-                snapshot.forEach(doc => {
-                    allTopics.push({ id: doc.id, ...doc.data() });
+                    else if(lower.endsWith('.png') || lower.endsWith('.jpg') || lower.endsWith('.jpeg')) { icon = 'far fa-image'; color = 'text-blue-500'; }
+                    else if(lower.endsWith('.mp4') || lower.endsWith('.mov')) { icon = 'fas fa-play-circle'; color = 'text-purple-500'; }
+                    else if(lower.endsWith('.doc') || lower.endsWith('.docx')) { icon = 'fas fa-file-word'; color = 'text-blue-600'; }
+                    
+                    html += `<a href="${file.data}" download="${file.name}" class="flex items-center gap-2 text-xs font-semibold text-gray-700 bg-white hover:bg-blue-50 px-3 py-2 rounded-lg border border-gray-200 shadow-sm transition-colors cursor-pointer" title="Download ${file.name}">
+                                <i class="${icon} ${color} text-base"></i> <span class="max-w-[140px] truncate">${file.name}</span> <i class="fas fa-download text-gray-400 ml-1"></i>
+                             </a>`;
                 });
-                if(allTopics.length === 0) loadDummyData();
-                else renderTopics();
-            }, (error) => {
-                console.error("Firebase Read Error:", error);
-                loadDummyData(); // Fallback to local data if there's an error
-            });
-        } catch (error) {
-            console.error("Firebase init failed:", error);
-            loadDummyData();
-        }
-
-        // Fallback Demo Data
-        function loadDummyData() {
-            allTopics = [
-                { id: '1', title: 'Python Basics', description: 'Basic python concepts, syntax and examples for beginners.', resources: 'Notes.pdf, code.png, intro.mp4', created_at: Date.now() - 500000000 },
-                { id: '2', title: 'Data Structures', description: 'Important concepts of arrays, linked lists, stack and queue.', resources: 'DS_Notes.pdf, lecture.mp4', created_at: Date.now() - 400000000 },
-                { id: '3', title: 'Web Development', description: 'HTML, CSS and JavaScript basics with examples.', resources: 'webdev.png, guide.pdf', created_at: Date.now() - 300000000 },
-                { id: '4', title: 'Database Systems', description: 'Introduction to DBMS, SQL queries and normalization.', resources: 'dbms.mp4, notes.pdf', created_at: Date.now() - 200000000 },
-                { id: '5', title: 'Project Ideas', description: 'Some interesting project ideas for CSE students.', resources: 'ideas.png, list.pdf', created_at: Date.now() - 100000000 },
-                { id: '6', title: 'Machine Learning', description: 'Overview of ML, types and real world applications.', resources: '', created_at: Date.now() }
-            ];
-            
-            const local = localStorage.getItem('team10_topics');
-            if(local) {
-                try { allTopics = JSON.parse(local); } catch(e){}
             }
-            renderTopics();
-        }
 
-        function saveLocallyIfNoDb() {
-            localStorage.setItem('team10_topics', JSON.stringify(allTopics));
-        }
-
-        function renderTopics() {
-            const query = searchInput.value.toLowerCase().trim();
-            const sort = sortSelect.value;
-            
-            let filtered = allTopics.filter(t => t.title.toLowerCase().includes(query) || t.description.toLowerCase().includes(query));
-            filtered.sort((a, b) => sort === 'newest' ? b.created_at - a.created_at : a.created_at - b.created_at);
-
-            topicsContainer.innerHTML = '';
-            
-            if (filtered.length === 0) {
-                topicsContainer.classList.add('hidden');
-                emptyState.classList.remove('hidden');
-                emptyState.style.display = 'flex';
-            } else {
-                topicsContainer.classList.remove('hidden');
-                emptyState.style.display = 'none';
-                filtered.forEach(topic => topicsContainer.appendChild(createTopicCard(topic)));
+            if (html === '') {
+                return `<div class="w-full text-center py-3 border border-dashed border-gray-200 rounded-xl text-xs font-semibold text-gray-500 bg-gray-50 mt-2 flex items-center justify-center gap-2"> No resources available... 😞</div>`;
             }
-        }
-
-        function getIconProps(title) {
-            const t = title.toLowerCase();
-            if (t.includes('python')) return { icon: 'fab fa-python', color: '#eab308' }; 
-            if (t.includes('data structure') || t.includes('ds')) return { icon: 'fas fa-project-diagram', color: '#22c55e' };
-            if (t.includes('web')) return { icon: 'fas fa-globe', color: '#3b82f6' }; 
-            if (t.includes('database') || t.includes('sql')) return { icon: 'fas fa-database', color: '#3b82f6' };
-            if (t.includes('idea') || t.includes('project')) return { icon: 'far fa-lightbulb', color: '#f59e0b' }; 
-            if (t.includes('machine learning') || t.includes('ai')) return { icon: 'fas fa-brain', color: '#475569' }; 
-            return { icon: 'fas fa-book', color: '#6366f1' }; 
-        }
-
-        function getResourceHTML(resString) {
-            if (!resString || resString.trim() === '') {
-                return `<div class="w-full text-center py-3 border border-dashed border-gray-200 rounded-xl text-xs font-semibold text-gray-500 bg-gray-50 mt-2 flex items-center justify-center gap-2"><i class="far fa-folder-open text-gray-400"></i> No resource available... 😞</div>`;
-            }
-            const resources = resString.split(',').map(s  class="block text-sm font-semibold text-gray-700 mb-1">Resources (Comma separated filenames)</label>
-                    <input type="text" id="topicUrl" class="w-full px-3 py-2 border border-gray-300 rounded-lg outline-none text-sm focus:border-blue-500" placeholder="e.g. Notes.pdf, code.png, intro.mp4">
-                    <p class="text-xs text-gray-500 mt-1"><i class="fas fa-info-circle"></i> Type file names to display icons (pdf, png, mp4, doc).</p>
-                </div>
-            </div>
-
-            <div class="flex justify-end gap-3 mt-6 pt-4 border-t">
-                <button class="close-modal px-5 py-2 rounded-lg text-gray-600 hover:bg-gray-100 font-medium text-sm border transition-colors">Cancel</button>
-                <button id="saveTopicBtn" class="px-5 py-2 rounded-lg bg-blueBtn text-white hover:bg-blueBtnHover font-medium text-sm shadow-sm transition-colors">
-                    Save Topic
-                </button>
-            </div>
-        </div>
-    </div>
-
-    <!-- UI Message Toasts -->
-    <div id="ui-toast" class="toast-popup fixed right-6 bg-white border border-gray-200 text-gray-800 p-4 rounded-xl shadow-2xl z-50 flex items-center gap-3 min-w-[250px]">
-        <div id="ui-toast-icon" class="text-green-500 text-xl"><i class="fas fa-check-circle"></i></div>
-        <div id="ui-toast-msg" class="font-medium text-sm">Action successful</div>
-    </div>
-
-    <div id="admin-warning-toast" class="toast-popup fixed right-6 bg-gray-900 border border-gray-700 text-white p-4 rounded-xl shadow-2xl z-50 flex items-start gap-3 min-w-[300px]">
-        <div class="text-yellow-400 text-xl mt-0.5"><i class="fas fa-exclamation-triangle"></i></div>
-        <div>
-            <div class="font-bold text-sm mb-1">Admin Page</div>
-            <div class="text-xs text-gray-300">This is the admin section.<br><i class="fas fa-lock text-[10px] mr-1"></i> Please login to continue.</div>
-        </div>
-        <button onclick="document.getElementById('admin-warning-toast').classList.remove('show')" class="text-gray-400 hover:text-white ml-auto"><i class="fas fa-times"></i></button>
-    </div>
-
-    <script>
-        // =========================================================================
-        // LOCAL STORAGE DATABASE
-        // =========================================================================
-        // We use local storage so the site loads instantly without loading spinners.
-        let allTopics = JSON.parse(localStorage.getItem('team10_topics')) || [];
-        
-        // Load initial dummy data if empty to match the design
-        if (allTopics.length === 0) {
-            allTopics = [
-                { id: '1', title: 'Python Basics', description: 'Basic python concepts, syntax and examples for beginners.', resources: 'Notes.pdf, code.png, intro.mp4', created_at: Date.now() - 500000 },
-                { id: '2', title: 'Data Structures', description: 'Important concepts of arrays, linked lists, stack and queue.', resources: 'DS_Notes.pdf, lecture.mp4', created_at: Date.now() - 400000 },
-                { id: '3', title: 'Web Development', description: 'HTML, CSS and JavaScript basics with examples.', resources: 'webdev.png, guide.pdf', created_at: Date.now() - 300000 },
-                { id: '4', title: 'Database Systems', description: 'Introduction to DBMS, SQL queries and normalization.', resources: 'dbms.mp4, notes.pdf', created_at: Date.now() - 200000 },
-                { id: '5', title: 'Project Ideas', description: 'Some interesting project ideas for CSE students.', resources: 'ideas.png, list.pdf', created_at: Date.now() - 100000 },
-                { id: '6', title: 'Machine Learning', description: 'Overview of ML, types and real world applications.', resources: '', created_at: Date.now() }
-            ];
-            saveData();
-        }
-
-        function saveData() {
-            localStorage.setItem('team10_topics', JSON.stringify(allTopics));
-        }
-
-        // =========================================================================
-        // STATE MANAGEMENT
-        // =========================================================================
-        window.isAdmin = false;
-        
-        const topicsContainer = document.getElementById('topicsContainer');
-        const emptyState = document.getElementById('emptyState');
-        const searchInput = document.getElementById('searchInput');
-        const sortSelect = document.getElementById('sortSelect');
-
-        function showToast(message, type = 'success') {
-            const toast = document.getElementById('ui-toast');
-            const icon = document.getElementById('ui-toast-icon');
-            document.getElementById('ui-toast-msg').innerText = message;
-            
-            if (type === 'error') { icon.innerHTML = '<i class="fas fa-times-circle text-red-500"></i>'; }
-            else { icon.innerHTML = '<i class="fas fa-check-circle text-green-500"></i>'; }
-            
-            toast.classList.add('show');
-            setTimeout(() => toast.classList.remove('show'), 3000);
-        }
-
-        function formatDate(ms) {
-            const date = new Date(ms);
-            const options = { day: 'numeric', month: 'short', year: 'numeric' };
-            return date.toLocaleDateString('en-GB', options);
-        }
-
-        // =========================================================================
-        // RENDERING UI
-        // =========================================================================
-        window.renderTopics = function() {
-            const query = searchInput.value.toLowerCase().trim();
-            const sort = sortSelect.value;
-            
-            let filtered = allTopics.filter(t => t.title.toLowerCase().includes(query) || t.description.toLowerCase().includes(query));
-            
-            // Sort by Date
-            filtered.sort((a, b) => sort === 'newest' ? b.created_at - a.created_at : a.created_at - b.created_at);
-
-            topicsContainer.innerHTML = '';
-            
-            if (filtered.length === 0) {
-                topicsContainer.classList.add('hidden');
-                emptyState.classList.remove('hidden');
-                emptyState.style.display = 'flex';
-            } else {
-                topicsContainer.classList.remove('hidden');
-                emptyState.style.display = 'none';
-                filtered.forEach(topic => topicsContainer.appendChild(createTopicCard(topic)));
-            }
-        }
-
-        function getIconProps(title) {
-            const t = title.toLowerCase();
-            if (t.includes('python')) return { icon: 'fab fa-python', color: '#F5C518', bg: '#FEF9E8' };
-            if (t.includes('data structure') || t.includes('ds')) return { icon: 'fas fa-project-diagram', color: '#22c55e', bg: '#DCFCE7' };
-            if (t.includes('web')) return { icon: 'fas fa-globe', color: '#3b82f6', bg: '#DBEAFE' };
-            if (t.includes('database') || t.includes('sql')) return { icon: 'fas fa-database', color: '#3b82f6', bg: '#DBEAFE' };
-            if (t.includes('idea') || t.includes('project')) return { icon: 'far fa-lightbulb', color: '#F59E0B', bg: '#FEF3C7' };
-            if (t.includes('machine learning') || t.includes('ai')) return { icon: 'fas fa-brain', color: '#475569', bg: '#F1F5F9' };
-            return { icon: 'fas fa-book', color: '#6366f1', bg: '#E0E7FF' }; // Default
-        }
-
-        function getResourceHTML(resString) {
-            if (!resString || resString.trim() === '') {
-                return `<div class="w-full text-center py-2 px-3 border border-dashed border-gray-300 rounded-lg text-xs text-gray-500 bg-gray-50 flex items-center justify-center gap-2 mt-2"><i class="far fa-folder-open"></i> No resource available... 😞</div>`;
-            }
-            
-            const resources = resString.split(',').map(s => s.trim()).filter(s => s);
-            let html = '';
-            
-            resources.forEach(res => {
-                let icon = 'fas fa-file-alt'; let color = 'text-gray-500';
-                const lowerRes = res.toLowerCase();
-                
-                if(lowerRes.endsWith('.pdf')) { icon = 'far fa-file-pdf'; color = 'text-gray-600'; }
-                else if(lowerRes.endsWith('.png') || lowerRes.endsWith('.jpg')) { icon = 'far fa-image'; color = 'text-gray-600'; }
-                else if(lowerRes.endsWith('.mp4')) { icon = 'fas fa-play-circle'; color = 'text-blue-500'; }
-                else if(lowerRes.endsWith('.doc') || lowerRes.endsWith('.docx')) { icon = 'fas fa-file-word'; color = 'text-blue-600'; }
-
-                html += `<div class="flex items-center gap-1.5 text-[12px] font-medium text-gray-600 bg-white px-2 py-1 rounded border border-gray-200 shadow-sm"><i class="${icon} ${color}"></i> ${res}</div>`;
-            });
             return `<div class="flex flex-wrap gap-2 mt-2">${html}</div>`;
         }
 
         function createTopicCard(topic) {
             const card = document.createElement('div');
-            card.className = "topic-card bg-white rounded-xl p-5 shadow-sm border border-gray-200 flex flex-col relative overflow-hidden h-full";
-            
+            card.className = "topic-card bg-white border border-gray-200 p-6 flex flex-col relative h-full";
             const style = getIconProps(topic.title);
+            const dateStr = new Date(topic.created_at || Date.now()).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
             
+            // Auto link detection in description (with safety check)
+            const safeDesc = topic.description || '';
+            let formattedDesc = safeDesc.replace(/(https?:\/\/[^\s]+)/g, '<a href="$1" target="_blank" class="text-blue-500 hover:text-blue-700 underline break-words font-medium"><i class="fas fa-external-link-alt text-xs mr-1"></i>$1</a>');
+
             let adminControls = '';
-            if (window.isAdmin) {
+            if (isAdmin) {
                 adminControls = `
-                    <div class="absolute bottom-4 right-4 flex gap-3">
-                        <button onclick="editTopic('${topic.id}')" class="text-blue-600 hover:text-blue-800 transition">
-                            <i class="fas fa-pen text-sm"></i>
+                    <div class="absolute bottom-5 right-5 flex gap-4 bg-white/80 p-1 rounded-lg">
+                        <button class="edit-btn text-blue-500 hover:text-blue-700 transition" data-id="${topic.id}" title="Edit">
+                            <i class="fas fa-pen pointer-events-none"></i>
                         </button>
-                        <button onclick="deleteTopic('${topic.id}')" class="text-red-500 hover:text-red-700 transition">
-                            <i class="far fa-trash-alt text-sm"></i>
+                        <button class="delete-btn text-red-500 hover:text-red-700 transition" data-id="${topic.id}" title="Delete">
+                            <i class="far fa-trash-alt pointer-events-none"></i>
                         </button>
                     </div>
                 `;
             }
 
             card.innerHTML = `
-                <div class="flex items-start gap-4 mb-3">
-                    <div claock text-sm font-semibold text-gray-700 mb-1">Resources (Comma separated filenames)</label>
-                    <input type="text" id="topicUrl" class="w-full px-3 py-2 border border-gray-300 rounded-lg outline-none text-sm focus:border-blue-500" placeholder="e.g. Notes.pdf, code.png, intro.mp4">
-                    <p class="text-xs text-gray-500 mt-1"><i class="fas fa-info-circle"></i> Type file names to display icons (pdf, png, mp4, doc).</p>
-                </div>
-            </div>
-
-            <div class="flex justify-end gap-3 mt-6 pt-4 border-t">
-                <button class="close-modal px-5 py-2 rounded-lg text-gray-600 hover:bg-gray-100 font-medium text-sm border transition-colors">Cancel</button>
-                <button id="saveTopicBtn" class="px-5 py-2 rounded-lg bg-blueBtn text-white hover:bg-blueBtnHover font-medium text-sm shadow-sm transition-colors">
-                    Save Topic
-                </button>
-            </div>
-        </div>
-    </div>
-
-    <!-- UI Message Toasts -->
-    <div id="ui-toast" class="toast-popup fixed right-6 bg-white border border-gray-200 text-gray-800 p-4 rounded-xl shadow-2xl z-50 flex items-center gap-3 min-w-[250px]">
-        <div id="ui-toast-icon" class="text-green-500 text-xl"><i class="fas fa-check-circle"></i></div>
-        <div id="ui-toast-msg" class="font-medium text-sm">Action successful</div>
-    </div>
-
-    <div id="admin-warning-toast" class="toast-popup fixed right-6 bg-gray-900 border border-gray-700 text-white p-4 rounded-xl shadow-2xl z-50 flex items-start gap-3 min-w-[300px]">
-        <div class="text-yellow-400 text-xl mt-0.5"><i class="fas fa-exclamation-triangle"></i></div>
-        <div>
-            <div class="font-bold text-sm mb-1">Admin Page</div>
-            <div class="text-xs text-gray-300">This is the admin section.<br><i class="fas fa-lock text-[10px] mr-1"></i> Please login to continue.</div>
-        </div>
-        <button onclick="document.getElementById('admin-warning-toast').classList.remove('show')" class="text-gray-400 hover:text-white ml-auto"><i class="fas fa-times"></i></button>
-    </div>
-
-    <script>
-        // =========================================================================
-        // LOCAL STORAGE DATABASE
-        // =========================================================================
-        // We use local storage so the site loads instantly without loading spinners.
-        let allTopics = JSON.parse(localStorage.getItem('team10_topics')) || [];
-        
-        // Load initial dummy data if empty to match the design
-        if (allTopics.length === 0) {
-            allTopics = [
-                { id: '1', title: 'Python Basics', description: 'Basic python concepts, syntax and examples for beginners.', resources: 'Notes.pdf, code.png, intro.mp4', created_at: Date.now() - 500000 },
-                { id: '2', title: 'Data Structures', description: 'Important concepts of arrays, linked lists, stack and queue.', resources: 'DS_Notes.pdf, lecture.mp4', created_at: Date.now() - 400000 },
-                { id: '3', title: 'Web Development', description: 'HTML, CSS and JavaScript basics with examples.', resources: 'webdev.png, guide.pdf', created_at: Date.now() - 300000 },
-                { id: '4', title: 'Database Systems', description: 'Introduction to DBMS, SQL queries and normalization.', resources: 'dbms.mp4, notes.pdf', created_at: Date.now() - 200000 },
-                { id: '5', title: 'Project Ideas', description: 'Some interesting project ideas for CSE students.', resources: 'ideas.png, list.pdf', created_at: Date.now() - 100000 },
-                { id: '6', title: 'Machine Learning', description: 'Overview of ML, types and real world applications.', resources: '', created_at: Date.now() }
-            ];
-            saveData();
-        }
-
-        function saveData() {
-            localStorage.setItem('team10_topics', JSON.stringify(allTopics));
-        }
-
-        // =========================================================================
-        // STATE MANAGEMENT
-        // =========================================================================
-        window.isAdmin = false;
-        
-        const topicsContainer = document.getElementById('topicsContainer');
-        const emptyState = document.getElementById('emptyState');
-        const searchInput = document.getElementById('searchInput');
-        const sortSelect = document.getElementById('sortSelect');
-
-        function showToast(message, type = 'success') {
-            const toast = document.getElementById('ui-toast');
-            const icon = document.getElementById('ui-toast-icon');
-            document.getElementById('ui-toast-msg').innerText = message;
-            
-            if (type === 'error') { icon.innerHTML = '<i class="fas fa-times-circle text-red-500"></i>'; }
-            else { icon.innerHTML = '<i class="fas fa-check-circle text-green-500"></i>'; }
-            
-            toast.classList.add('show');
-            setTimeout(() => toast.classList.remove('show'), 3000);
-        }
-
-        function formatDate(ms) {
-            const date = new Date(ms);
-            const options = { day: 'numeric', month: 'short', year: 'numeric' };
-            return date.toLocaleDateString('en-GB', options);
-        }
-
-        // =========================================================================
-        // RENDERING UI
-        // =========================================================================
-        window.renderTopics = function() {
-            const query = searchInput.value.toLowerCase().trim();
-            const sort = sortSelect.value;
-            
-            let filtered = allTopics.filter(t => t.title.toLowerCase().includes(query) || t.description.toLowerCase().includes(query));
-            
-            // Sort by Date
-            filtered.sort((a, b) => sort === 'newest' ? b.created_at - a.created_at : a.created_at - b.created_at);
-
-            topicsContainer.innerHTML = '';
-            
-            if (filtered.length === 0) {
-                topicsContainer.classList.add('hidden');
-                emptyState.classList.remove('hidden');
-                emptyState.style.display = 'flex';
-            } else {
-                topicsContainer.classList.remove('hidden');
-                emptyState.style.display = 'none';
-                filtered.forEach(topic => topicsContainer.appendChild(createTopicCard(topic)));
-            }
-        }
-
-        function getIconProps(title) {
-            const t = title.toLowerCase();
-            if (t.includes('python')) return { icon: 'fab fa-python', color: '#F5C518', bg: '#FEF9E8' };
-            if (t.includes('data structure') || t.includes('ds')) return { icon: 'fas fa-project-diagram', color: '#22c55e', bg: '#DCFCE7' };
-            if (t.includes('web')) return { icon: 'fas fa-globe', color: '#3b82f6', bg: '#DBEAFE' };
-            if (t.includes('database') || t.includes('sql')) return { icon: 'fas fa-database', color: '#3b82f6', bg: '#DBEAFE' };
-            if (t.includes('idea') || t.includes('project')) return { icon: 'far fa-lightbulb', color: '#F59E0B', bg: '#FEF3C7' };
-            if (t.includes('machine learning') || t.includes('ai')) return { icon: 'fas fa-brain', color: '#475569', bg: '#F1F5F9' };
-            return { icon: 'fas fa-book', color: '#6366f1', bg: '#E0E7FF' }; // Default
-        }
-
-        function getResourceHTML(resString) {
-            if (!resString || resString.trim() === '') {
-                return `<div class="w-full text-center py-2 px-3 border border-dashed border-gray-300 rounded-lg text-xs text-gray-500 bg-gray-50 flex items-center justify-center gap-2 mt-2"><i class="far fa-folder-open"></i> No resource available... 😞</div>`;
-            }
-            
-            const resources = resString.split(',').map(s => s.trim()).filter(s => s);
-            let html = '';
-            
-            resources.forEach(res => {
-                let icon = 'fas fa-file-alt'; let color = 'text-gray-500';
-                const lowerRes = res.toLowerCase();
-                
-                if(lowerRes.endsWith('.pdf')) { icon = 'far fa-file-pdf'; color = 'text-gray-600'; }
-                else if(lowerRes.endsWith('.png') || lowerRes.endsWith('.jpg')) { icon = 'far fa-image'; color = 'text-gray-600'; }
-                else if(lowerRes.endsWith('.mp4')) { icon = 'fas fa-play-circle'; color = 'text-blue-500'; }
-                else if(lowerRes.endsWith('.doc') || lowerRes.endsWith('.docx')) { icon = 'fas fa-file-word'; color = 'text-blue-600'; }
-
-                html += `<div class="flex items-center gap-1.5 text-[12px] font-medium text-gray-600 bg-white px-2 py-1 rounded border border-gray-200 shadow-sm"><i class="${icon} ${color}"></i> ${res}</div>`;
-            });
-            return `<div class="flex flex-wrap gap-2 mt-2">${html}</div>`;
-        }
-
-        function createTopicCard(topic) {
-            const card = document.createElement('div');
-            card.className = "topic-card bg-white rounded-xl p-5 shadow-sm border border-gray-200 flex flex-col relative overflow-hidden h-full";
-            
-            const style = getIconProps(topic.title);
-            
-            let adminControls = '';
-            if (window.isAdmin) {
-                adminControls = `
-                    <div class="absolute bottom-4 right-4 flex gap-3">
-                        <button onclick="editTopic('${topic.id}')" class="text-blue-600 hover:text-blue-800 transition">
-                            <i class="fas fa-pen text-sm"></i>
-                        </button>
-                        <button onclick="deleteTopic('${topic.id}')" class="text-red-500 hover:text-red-700 transition">
-                            <i class="far fa-trash-alt text-sm"></i>
-                        </button>
+                <div class="flex items-start gap-4 mb-4">
+                    <div class="w-12 h-12 flex items-center justify-center shrink-0" style="color: ${style.color}">
+                        <i class="${style.icon} text-4xl"></i>
                     </div>
-                `;
-            }
-
-            card.innerHTML = `
-                <div class="flex items-start gap-4 mb-3">
-                    <div cla</button>
-            <h2 id="topicModalTitle" class="text-xl font-bold text-gray-800 mb-5 border-b pb-3">Add New Topic</h2>
-            
-            <div class="space-y-4">
-                <div>
-                    <label class="block text-sm font-semibold text-gray-700 mb-1">Topic Title *</label>
-                    <input type="text" id="topicTitle" class="w-full px-3 py-2 border rounded-lg outline-none text-sm focus:border-blue-500 bg-gray-50" placeholder="e.g. Python Basics">
-                </div>
-                <div>
-                    <label class="block text-sm font-semibold text-gray-700 mb-1">Description *</label>
-                    <textarea id="topicDesc" rows="3" class="w-full px-3 py-2 border rounded-lg outline-none text-sm focus:border-blue-500 bg-gray-50" placeholder="Briefly describe the topic..."></textarea>
-                </div>
-                <div>
-                    <label class="block text-sm font-semibold text-gray-700 mb-1">Resources (Comma separated)</label>
-                    <input type="text" id="topicUrl" class="w-full px-3 py-2 border rounded-lg outline-none text-sm bg-gray-50 focus:border-blue-500" placeholder="e.g. Notes.pdf, code.png, video.mp4">
-                    <p class="text-xs text-gray-500 mt-1"><i class="fas fa-info-circle"></i> Type file names to display icons.</p>
-                </div>
-            </div>
-
-            <div class="flex justify-end gap-3 mt-6 pt-4 border-t">
-                <button class="close-modal px-5 py-2 rounded-lg text-gray-600 hover:bg-gray-100 font-medium text-sm border transition-colors">Cancel</button>
-                <button id="saveTopicBtn" class="flex items-center justify-center px-5 py-2 rounded-lg bg-blueBtn text-white hover:bg-blueBtnHover font-medium text-sm shadow-sm transition-colors min-w-[120px]">
-                    <span id="saveBtnText">Save Topic</span>
-                    <div id="saveBtnLoader" class="loader hidden !w-4 !h-4 !border-2 !border-white !border-t-transparent ml-2"></div>
-                </button>
-            </div>
-        </div>
-    </div>
-
-    <!-- UI Message Toast -->
-    <div id="ui-toast" class="fixed right-6 bg-white border border-gray-200 text-gray-800 p-4 rounded-xl shadow-2xl z-50 flex items-center gap-3 min-w-[250px] rounded-bl-none">
-        <div id="ui-toast-icon" class="text-blue-500 text-xl"><i class="fas fa-info-circle"></i></div>
-        <div id="ui-toast-msg" class="font-medium text-sm">Notification</div>
-    </div>
-
-    <script>
-        // =========================================================================
-        // 1. SUPABASE CONFIGURATION (See README for setup instructions)
-        // =========================================================================
-        const SUPABASE_URL = 'https://cgipenthtnzqlfsupyaq.supabase.co/rest/v1/';
-        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNnaXBlbnRodG56cWxmc3VweWFxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA1MTc0MDYsImV4cCI6MjEwNjA5MzQwNn0.wQ29CLjWOVblBDcgGg8SGxrBmIoIZybclL-ayPb6e6Y';
-        
-        // Check if user has updated keys
-        const isSupabaseConfigured = SUPABASE_URL !== 'YOUR_SUPABASE_PROJECT_URL';
-        const supabaseClient = isSupabaseConfigured ? supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null;
-
-        // =========================================================================
-        // 2. STATE MANAGEMENT & UTILS
-        // =========================================================================
-        window.isAdmin = false;
-        let allTopics = [];
-
-        const topicsContainer = document.getElementById('topicsContainer');
-        const emptyState = document.getElementById('emptyState');
-        const initialLoading = document.getElementById('initialLoading');
-        const searchInput = document.getElementById('searchInput');
-        const sortSelect = document.getElementById('sortSelect');
-
-        function showCustomToast(message, type = 'info') {
-            const toast = document.getElementById('ui-toast');
-            const icon = document.getElementById('ui-toast-icon');
-            document.getElementById('ui-toast-msg').innerText = message;
-            
-            if (type === 'error') { icon.innerHTML = '<i class="fas fa-times-circle text-red-500"></i>'; }
-            else if (type === 'success') { icon.innerHTML = '<i class="fas fa-check-circle text-green-500"></i>'; }
-            else { icon.innerHTML = '<i class="fas fa-info-circle text-blue-500"></i>'; }
-            
-            toast.classList.add('show');
-            setTimeout(() => toast.classList.remove('show'), 3000);
-        }
-
-        // =========================================================================
-        // 3. DATABASE OPERATIONS
-        // =========================================================================
-        async function fetchTopicsFromDB() {
-            if (!isSupabaseConfigured) {
-                // Fallback demo data if keys are not set up yet
-                allTopics = [
-                    { id: '1', title: 'Python Basics', description: 'Basic python concepts and syntax.', resources: 'Notes.pdf, snippet.png', created_at: Date.now() - 100000 },
-                    { id: '2', title: 'Data Structures', description: 'Concepts of arrays, linked lists, stack.', resources: 'DS.pdf, video.mp4', created_at: Date.now() - 50000 },
-                ];
-                renderTopics();
-                showCustomToast("Showing demo data. Please configure Supabase.", "error");
-                return;
-            }
-
-            try {
-                const { data, error } = await supabaseClient.from('topics').select('*');
-                if (error) throw error;
-                allTopics = data || [];
-                renderTopics();
-            } catch (err) {
-                console.error("Error fetching data:", err);
-                showCustomToast("Error connecting to database.", "error");
-                initialLoading.classList.add('hidden');
-                emptyState.classList.remove('hidden');
-                emptyState.style.display = 'flex';
-            }
-        }
-
-        async function saveTopicToDB(title, desc, resources) {
-            if (!isSupabaseConfigured) {
-                showCustomToast("Cannot save. Supabase is not configured.", "error");
-                return false;
-            }
-
-            try {
-                const { error } = await supabaseClient.from('topics').insert([
-                    { title: title, description: desc, resources: resources, created_at: Date.now() }
-                ]);
-                
-                if (error) throw error;
-                
-                showCustomToast("Topic added successfully!", "success");
-                fetchTopicsFromDB(); // Refresh data
-                return true;
-            } catch (err) {
-                console.error("Insert error:", err);
-                showCustomToast("Failed to save topic.", "error");
-                return false;
-            }
-        }
-
-        async function deleteTopicFromDB(id) {
-            if (!isSupabaseConfigured) return;
-            
-            if (confirm("Are you sure you want to delete this topic?")) {
-                try {
-                    const { error } = await supabaseClient.from('topics').delete().eq('id', id);
-                    if (error) throw error;
-                    showCustomToast("Topic deleted.", "success");
-                    fetchTopicsFromDB(); // Refresh data
-                } catch (err) {
-                    console.error("Delete error:", err);
-                    showCustomToast("Failed to delete topic.", "error");
-                }
-            }
-        }
-
-        // =========================================================================
-        // 4. RENDERING UI
-        // =========================================================================
-        window.renderTopics = function() {
-            initialLoading.classList.add('hidden');
-            const query = searchInput.value.toLowerCase().trim();
-            const sort = sortSelect.value;
-            
-            let filtered = allTopics.filter(t => t.title.toLowerCase().includes(query));
-            filtered.sort((a, b) => sort === 'newest' ? b.created_at - a.created_at : a.created_at - b.created_at);
-
-            topicsContainer.innerHTML = '';
-            
-            if (filtered.length === 0) {
-                topicsContainer.classList.add('hidden');
-                emptyState.classList.remove('hidden');
-                emptyState.style.display = 'flex';
-            } else {
-                topicsContainer.classList.remove('hidden');
-                emptyState.style.display = 'none';
-                filtered.forEach(topic => topicsContainer.appendChild(createTopicCard(topic)));
-            }
-        }
-
-        function getIconProps(title) {
-            const t = title.toLowerCase();
-            if (t.includes('python')) return 'fab fa-python icon-python';
-            if (t.includes('data structure') || t.includes('ds')) return 'fas fa-project-diagram icon-ds';
-            if (t.includes('web')) return 'fas fa-globe icon-web';
-            if (t.includes('database') || t.includes('sql')) return 'fas fa-database icon-db';
-            if (t.includes('idea') || t.includes('project')) return 'far fa-lightbulb icon-idea';
-            if (t.includes('machine learning') || t.includes('ai')) return 'fas fa-brain icon-ml';
-            return 'fas fa-book text-blue-500';
-        }
-
-        function getResourceHTML(resString) {
-            if (!resString || resString.trim() === '') {
-                return `<div class="w-full text-center py-2.5 px-3 border border-dashed border-gray-200 rounded-lg text-xs text-gray-400 bg-gray-50 flex items-center justify-center gap-2 mt-1"><i class="far fa-folder-open"></i> No resource available... 😞</div>`;
-            }
-            
-            const resources = resString.split(',').map(s => s.trim()).filter(s => s);
-            let html = '';
-            
-            resources.forEach(res => {
-                let icon = 'fas fa-file-alt'; let color = 'text-gray-500';
-                const lowerRes = res.toLowerCase();
-                
-                if(lowerRes.endsWith('.pdf')) { icon = 'far fa-file-pdf'; color = 'text-red-500'; }
-                else if(lowerRes.endsWith('.png') || lowerRes.endsWith('.jpg')) { icon = 'far fa-image'; color = 'text-blue-500'; }
-                else if(lowerRes.endsWith('.mp4')) { icon = 'fas fa-play-circle'; color = 'text-indigo-500'; }
-                else if(lowerRes.endsWith('.doc') || lowerRes.endsWith('.docx')) { icon = 'fas fa-file-word'; color = 'text-blue-700'; }
-
-                html += `<div class="flex items-center gap-1.5 text-[12px] font-medium text-gray-600 bg-white px-2.5 py-1.5 rounded border border-gray-200 shadow-sm"><i class="${icon} ${color}"></i> ${res}</div>`;
-            });
-            return `<div class="flex flex-wrap gap-2 mt-3">${html}</div>`;
-        }
-
-        function createTopicCard(topic) {
-            const card = document.createElement('div');
-            card.className = "topic-card bg-white rounded-2xl p-6 shadow-sm border border-gray-100 flex flex-col relative overflow-hidden h-full";
-            
-            const iconClass = getIconProps(topic.title);
-            
-            let adminControls = '';
-            if (window.isAdmin) {
-                adminControls = `
-                    <div class="absolute top-4 right-4 flex gap-2">
-                        <button onclick="deleteTopicFromDB('${topic.id}')" class="w-8 h-8 rounded-full bg-red-50 text-red-500 hover:bg-red-500 hover:text-white transition flex items-center justify-center shadow-sm">
-                            <i class="far fa-trash-alt text-xs"></i>
-                        </button>
+                    <div>
+                        <h3 class="text-lg font-bold text-gray-900 leading-tight mb-1">${topic.title || 'Untitled'}</h3>
+                        <p class="text-xs text-gray-500 font-medium flex items-center gap-1.5"><i class="far fa-calendar-alt text-gray-400"></i> ${dateStr}</p>
                     </div>
-                `;
-            }
-
-            card.innerHTML = `
+                </div>
+                <p class="text-sm text-gray-600 mb-5 flex-grow line-clamp-3 leading-relaxed whitespace-pre-line">${formattedDesc}</p>
+                <div class="pt-2 ${isAdmin ? 'pb-8' : ''}">
+                    <span class="text-xs font-bold text-gray-400 uppercase tracking-wider block mb-2">Resources:</span>
+                    ${getResourceHTML(topic)}
+                </div>
                 ${adminControls}
-                <div class="flex items-center gap-4 mb-4">
-                    <div class="w-12 h-12 rounded-xl bg-gray-50 flex items-center justify-center border border-gray-100 shadow-sm shrink-0">
-                        <i class="${iconClass} text-2xl"></i>
-                    </div>
-                    <h3 class="text-lg font-bold text-gray-800 leading-tight pr-8">${topic.title}</h3>
-                </div>
-                <p class="text-sm text-gray-600 mb-5 flex-grow line-clamp-3 leading-relaxed">${topic.description}</p>
-                
-                <div class="pt-4 border-t border-gray-100">
-                    <span class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-1 block">Attached Resources</span>
-                    ${getResourceHTML(topic.resources)}
-                </div>
             `;
             return card;
         }
 
-        // =========================================================================
-        // 5. EVENT LISTENERS & MODALS
-        // =========================================================================
-        
-        // Search & Sort Listeners
         searchInput.addEventListener('input', renderTopics);
         sortSelect.addEventListener('change', renderTopics);
 
-        // Secret Admin Lock (3 clicks within 2 seconds)
+        function showToast(message, type = 'success') {
+            const toast = document.getElementById('ui-toast');
+            const icon = document.getElementById('ui-toast-icon');
+            document.getElementById('ui-toast-msg').innerText = message;
+            if (type === 'error') { 
+                icon.innerHTML = '<i class="fas fa-exclamation-circle text-red-400"></i>';
+                toast.classList.replace('bg-gray-900', 'bg-red-900');
+            } else { 
+                icon.innerHTML = '<i class="fas fa-check-circle text-green-400"></i>'; 
+                toast.classList.replace('bg-red-900', 'bg-gray-900');
+            }
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 3000);
+        }
+
+        function closeAllModals() {
+            modalOverlay.style.display = 'none';
+            document.getElementById('loginModal').classList.add('hidden');
+            document.getElementById('topicModal').classList.add('hidden');
+            document.getElementById('deleteModal').classList.add('hidden');
+        }
+
+        document.querySelectorAll('.close-modal').forEach(btn => btn.addEventListener('click', closeAllModals));
+        document.getElementById('closeAdminWarning').addEventListener('click', () => {
+            document.getElementById('admin-warning-toast').classList.remove('show');
+        });
+
+        // 3-Click Admin Lock
         let clickCount = 0;
         let clickTimer;
         document.getElementById('secretLock').addEventListener('click', () => {
-            if (window.isAdmin) {
-                // Logout if already admin
-                window.isAdmin = false;
+            if (isAdmin) {
+                isAdmin = false;
                 document.getElementById('addTopicBtn').classList.add('hidden');
+                document.getElementById('secretLockIcon').className = "fas fa-lock text-gray-800 text-xl";
                 renderTopics();
-                showCustomToast("Admin logged out successfully.", "success");
+                showToast("Admin logged out");
                 return;
             }
 
             clickCount++;
             clearTimeout(clickTimer);
-            if (clickCount === 3) {
-                document.getElementById('modalOverlay').classList.remove('hidden');
-                document.getElementById('modalOverlay').style.display = 'flex';
+            
+            if (clickCount === 1) {
+                document.getElementById('admin-warning-toast').classList.add('show');
+                setTimeout(() => document.getElementById('admin-warning-toast').classList.remove('show'), 4000);
+            } 
+            else if (clickCount >= 3) {
+                document.getElementById('admin-warning-toast').classList.remove('show');
+                modalOverlay.style.display = 'flex';
                 document.getElementById('loginModal').classList.remove('hidden');
                 clickCount = 0;
-            } else {
-                clickTimer = setTimeout(() => { clickCount = 0; }, 2000);
             }
+            clickTimer = setTimeout(() => { clickCount = 0; }, 1500);
         });
 
-        // Close Modals
-        document.querySelectorAll('.close-modal').forEach(btn => {
-            btn.addEventListener('click', () => {
-                document.getElementById('modalOverlay').style.display = 'none';
-                document.getElementById('loginModal').classList.add('hidden');
-                document.getElementById('topicModal').classList.add('hidden');
-            });
-        });
-
-        // Login Submission
         document.getElementById('loginSubmitBtn').addEventListener('click', () => {
-            const email = document.getElementById('loginEmail').value;
-            const pass = document.getElementById('loginPassword').value;
-            
+            const email = document.getElementById('loginEmail').value.trim();
+            const pass = document.getElementById('loginPassword').value.trim();
             if (email === 'admin123@maom.com' && pass === 'relax') {
-                window.isAdmin = true;
-                document.getElementById('modalOverlay').style.display = 'none';
-                document.getElementById('loginModal').classList.add('hidden');
+                isAdmin = true;
+                closeAllModals();
                 document.getElementById('addTopicBtn').classList.remove('hidden');
+                document.getElementById('secretLockIcon').className = "fas fa-unlock-alt text-blue-300 text-xl";
                 document.getElementById('loginError').classList.add('hidden');
-                
-                // Clear fields
                 document.getElementById('loginEmail').value = '';
                 document.getElementById('loginPassword').value = '';
-                
-                showCustomToast("Logged in successfully as Admin.", "success");
-                renderTopics(); // Re-render to show delete buttons
+                showToast("Logged in successfully");
+                renderTopics();
             } else {
                 document.getElementById('loginError').classList.remove('hidden');
             }
         });
 
-        // Open Add Topic Modal
         document.getElementById('addTopicBtn').addEventListener('click', () => {
+            document.getElementById('topicModalTitle').innerText = 'Add New Topic';
+            document.getElementById('editTopicId').value = '';
             document.getElementById('topicTitle').value = '';
             document.getElementById('topicDesc').value = '';
-            document.getElementById('topicUrl').value = '';
-            
-            document.getElementById('modalOverlay').style.display = 'flex';
+            currentAttachments = [];
+            document.getElementById('fileInput').value = '';
+            renderFilePreviews();
+            modalOverlay.style.display = 'flex';
             document.getElementById('topicModal').classList.remove('hidden');
         });
 
-        // Save Topic
+        topicsContainer.addEventListener('click', (e) => {
+            const editBtn = e.target.closest('.edit-btn');
+            const deleteBtn = e.target.closest('.delete-btn');
+            
+            if (editBtn) {
+                const id = editBtn.getAttribute('data-id');
+                const topic = allTopics.find(t => t.id === id);
+                if (topic) {
+                    document.getElementById('topicModalTitle').innerText = 'Edit Topic';
+                    document.getElementById('editTopicId').value = topic.id;
+                    document.getElementById('topicTitle').value = topic.title || '';
+                    document.getElementById('topicDesc').value = topic.description || '';
+                    currentAttachments = topic.attachments ? [...topic.attachments] : [];
+                    document.getElementById('fileInput').value = '';
+                    renderFilePreviews();
+                    modalOverlay.style.display = 'flex';
+                    document.getElementById('topicModal').classList.remove('hidden');
+                }
+            }
+            if (deleteBtn) {
+                currentTopicToDelete = deleteBtn.getAttribute('data-id');
+                modalOverlay.style.display = 'flex';
+                document.getElementById('deleteModal').classList.remove('hidden');
+            }
+        });
+
         document.getElementById('saveTopicBtn').addEventListener('click', async () => {
+            const id = document.getElementById('editTopicId').value;
             const title = document.getElementById('topicTitle').value.trim();
             const desc = document.getElementById('topicDesc').value.trim();
-            const res = document.getElementById('topicUrl').value.trim();
 
-            if (!title || !desc) {
-                showCustomToast("Please fill in required fields (*)", "error");
-                return;
-            }
+            if (!title || !desc) { showToast("Title and Description required", "error"); return; }
 
-            const btn = document.getElementById('saveTopicBtn');
-            const loader = document.getElementById('saveBtnLoader');
-            const text = document.getElementById('saveBtnText');
+            const isNew = !id;
+            const topicId = isNew ? Date.now().toString() : id;
             
-            btn.disabled = true; loader.classList.remove('hidden'); text.innerText = 'Saving...';
+            const topicData = { 
+                title, 
+                description: desc, 
+                attachments: currentAttachments, 
+                created_at: isNew ? Date.now() : (allTopics.find(t => t.id === id)?.created_at || Date.now())
+            };
 
-            const success = await saveTopicToDB(title, desc, res);
+            if (isNew) { allTopics.push({ id: topicId, ...topicData }); } 
+            else { const idx = allTopics.findIndex(t => t.id === id); if(idx !== -1) allTopics[idx] = { id: topicId, ...topicData }; }
             
-            btn.disabled = false; loader.classList.add('hidden'); text.innerText = 'Save Topic';
-            
-            if (success) {
-                document.getElementById('modalOverlay').style.display = 'none';
-                document.getElementById('topicModal').classList.add('hidden');
+            renderTopics();
+            closeAllModals();
+            showToast(isNew ? "Topic saved!" : "Topic updated!");
+
+            try {
+                if(db) {
+                    await setDoc(doc(db, 'public_topics', topicId), topicData);
+                } else {
+                    saveLocallyIfNoDb();
+                }
+            } catch (e) {
+                console.error("Cloud Save Error", e);
+                showToast("Saved locally (Cloud unavailable)", "error");
+                saveLocallyIfNoDb(); 
             }
         });
 
-        // Initial Load
-        window.addEventListener('DOMContentLoaded', () => {
-            fetchTopicsFromDB();
+        document.getElementById('confirmDeleteBtn').addEventListener('click', async () => {
+            if (!currentTopicToDelete) return;
+            allTopics = allTopics.filter(t => t.id !== currentTopicToDelete);
+            renderTopics();
+            closeAllModals();
+            showToast("Topic deleted");
+
+            try {
+                if(db) await deleteDoc(doc(db, 'public_topics', currentTopicToDelete));
+                else saveLocallyIfNoDb();
+            } catch (e) {
+                console.error("Cloud Delete Error", e);
+                saveLocallyIfNoDb();
+            }
+            currentTopicToDelete = null;
         });
+
+        function renderFilePreviews() {
+            const container = document.getElementById('filePreviewContainer');
+            container.innerHTML = currentAttachments.map((f, index) => `
+                <div class="flex items-center gap-2 bg-blue-50 text-blue-700 px-3 py-1.5 rounded-lg text-xs font-semibold border border-blue-100">
+                    <i class="fas fa-paperclip"></i> <span class="max-w-[120px] truncate">${f.name}</span>
+                    <i class="fas fa-times cursor-pointer text-red-500 hover:text-red-700 ml-1" onclick="removeAttachment(${index})"></i>
+                </div>
+            `).join('');
+        }
+        
+        window.removeAttachment = (index) => {
+            currentAttachments.splice(index, 1);
+            renderFilePreviews();
+        };
+
+        const fileInput = document.getElementById('fileInput');
+        if (fileInput) {
+            fileInput.addEventListener('change', async (e) => {
+                const files = Array.from(e.target.files);
+                let totalSize = currentAttachments.reduce((sum, f) => sum + (f.size || 0), 0);
+
+                for (const file of files) {
+                    if (totalSize + file.size > 500000) { 
+                        showToast("File too large! Max 500KB per topic.", "error");
+                        break;
+                    }
+                    try {
+                        const base64 = await toBase64(file);
+                        currentAttachments.push({
+                            name: file.name,
+                            type: file.type,
+                            size: file.size,
+                            data: base64
+                        });
+                        totalSize += file.size;
+                    } catch (err) {
+                        showToast("Error reading file", "error");
+                    }
+                }
+                renderFilePreviews();
+                e.target.value = ''; 
+            });
+        }
+
+        function toBase64(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.readAsDataURL(file);
+                reader.onload = () => resolve(reader.result);
+                reader.onerror = error => reject(error);
+            });
+        }
     </script>
 </body>
 </html>
