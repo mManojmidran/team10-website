@@ -5,11 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CSE-H Team-10</title>
     
-    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- FontAwesome -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     
     <script>
@@ -35,7 +32,6 @@
             color: #1e293b;
         }
         
-        /* Mountain Header */
         .hero-pattern {
             background-image: url('https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?q=80&w=2070&auto=format&fit=crop');
             background-size: cover;
@@ -46,11 +42,9 @@
             background: linear-gradient(to bottom, rgba(255, 255, 255, 0.4) 0%, rgba(255, 255, 255, 0.9) 80%, #f8fafc 100%);
         }
 
-        /* Card Hover Effects */
         .topic-card { transition: all 0.2s ease-in-out; border-radius: 16px; }
         .topic-card:hover { transform: translateY(-4px); box-shadow: 0 12px 20px -5px rgba(0, 0, 0, 0.08); }
 
-        /* Custom Toasts */
         .toast-popup {
             bottom: -100px; 
             transition: bottom 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
@@ -99,9 +93,8 @@
 
     <main class="flex-grow container mx-auto px-4 py-8 max-w-[1200px] relative z-10 -mt-6">
         
-        <!-- Toolbar (Search & Sort) -->
+        <!-- Toolbar -->
         <div class="flex flex-col md:flex-row justify-between items-center gap-4 mb-8 bg-white p-3 rounded-2xl shadow-sm border border-gray-100">
-            <!-- Search -->
             <div class="relative w-full md:w-1/2">
                 <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
                     <i class="fas fa-search text-gray-400"></i>
@@ -110,7 +103,6 @@
             </div>
             
             <div class="flex w-full md:w-auto items-center gap-3">
-                <!-- Sort -->
                 <div class="w-full md:w-auto flex items-center bg-gray-50 rounded-xl px-3 relative border border-gray-100 hover:border-gray-200 transition-all">
                     <i class="far fa-calendar-alt text-gray-500 absolute left-4"></i>
                     <select id="sortSelect" class="w-full md:w-auto pl-10 pr-10 py-3 rounded-xl focus:outline-none bg-transparent text-sm font-medium text-gray-700 appearance-none cursor-pointer">
@@ -120,19 +112,19 @@
                     <i class="fas fa-chevron-down text-gray-400 absolute right-4 pointer-events-none text-xs"></i>
                 </div>
 
-                <!-- Add Button (Admin Only) -->
                 <button id="addTopicBtn" class="hidden w-full md:w-auto bg-blueBtn text-white px-6 py-3 rounded-xl hover:bg-blueBtnHover transition font-semibold shadow-md whitespace-nowrap text-sm flex items-center justify-center">
                     <i class="fas fa-plus mr-2"></i> Add Topic
                 </button>
             </div>
         </div>
 
-        <!-- Topics Feed -->
-        <div id="topicsContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            <!-- Content will be injected here via JS -->
+        <div id="loadingState" class="flex flex-col items-center justify-center py-20">
+            <i class="fas fa-circle-notch fa-spin text-4xl text-blue-500 mb-4"></i>
+            <p class="text-gray-500 font-medium">Connecting to Cloud Database...</p>
         </div>
+
+        <div id="topicsContainer" class="hidden grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
         
-        <!-- Empty State -->
         <div id="emptyState" class="hidden flex-col items-center justify-center py-20 text-gray-500 bg-white rounded-3xl shadow-sm border border-gray-100 mt-4">
             <i class="fas fa-folder-open text-6xl mb-4 text-gray-200"></i>
             <p class="text-xl font-medium text-gray-700">No topics found.</p>
@@ -191,9 +183,8 @@
                     <textarea id="topicDesc" rows="3" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl outline-none text-sm focus:bg-white focus:border-blue-500" placeholder="Briefly describe the topic..."></textarea>
                 </div>
                 
-                <!-- NEW: Add External Links -->
                 <div class="border-t border-gray-100 pt-4">
-                    <label class="block text-sm font-bold text-gray-700 mb-2">Add External Link (Google Drive, YouTube, etc.)</label>
+                    <label class="block text-sm font-bold text-gray-700 mb-2">Add External Link (Drive, YouTube, etc.)</label>
                     <div class="flex flex-col sm:flex-row gap-2">
                         <input type="url" id="linkUrl" class="flex-1 px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl outline-none text-sm focus:bg-white focus:border-blue-500" placeholder="https://youtube.com/...">
                         <div class="flex gap-2">
@@ -203,16 +194,11 @@
                     </div>
                 </div>
 
-                <!-- File Attachments -->
                 <div class="border-t border-gray-100 pt-4">
-                    <label class="block text-sm font-bold text-gray-700 mb-2">Upload Small Files (Photos/PDFs)</label>
+                    <label class="block text-sm font-bold text-gray-700 mb-2">Upload File (Max 500KB total)</label>
                     <input type="file" id="fileInput" multiple class="block w-full text-sm text-gray-500 file:mr-4 file:py-2.5 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-bold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 transition-all border border-gray-200 rounded-xl p-1 bg-gray-50 cursor-pointer">
-                    <p class="text-xs text-gray-500 mt-2 font-medium leading-relaxed">
-                        <i class="fas fa-info-circle text-blue-500 mr-1"></i> Attach photos, documents, or small videos. Max 500KB total.
-                    </p>
                 </div>
                 
-                <!-- Container for Links and Files -->
                 <div id="filePreviewContainer" class="flex flex-wrap gap-2 mt-3 p-3 bg-gray-50 rounded-xl border border-dashed border-gray-200 min-h-[50px]"></div>
             </div>
 
@@ -224,7 +210,6 @@
             </div>
         </div>
 
-        <!-- Custom Delete Confirmation Modal -->
         <div id="deleteModal" class="bg-white rounded-3xl shadow-2xl w-full max-w-[340px] p-8 hidden relative text-center">
             <div class="w-16 h-16 bg-red-50 rounded-full flex items-center justify-center mx-auto mb-4">
                 <i class="fas fa-trash-alt text-red-500 text-2xl"></i>
@@ -257,7 +242,7 @@
         import { getFirestore, doc, setDoc, deleteDoc, onSnapshot, collection } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
         import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
 
-        // Your specific Firebase Keys
+        // This is your specific Firebase configuration from your image
         const firebaseConfig = {
             apiKey: "AIzaSyAAzzTUCdAVzckrFR234CZxHTusgXlPxgw",
             authDomain: "team10-d5285.firebaseapp.com",
@@ -275,31 +260,25 @@
         let currentAttachments = []; 
 
         const topicsContainer = document.getElementById('topicsContainer');
+        const loadingState = document.getElementById('loadingState');
         const emptyState = document.getElementById('emptyState');
         const searchInput = document.getElementById('searchInput');
         const sortSelect = document.getElementById('sortSelect');
         const modalOverlay = document.getElementById('modalOverlay');
 
+        // Connecting directly to your Cloud Database (No fallbacks!)
         async function initializeDatabase() {
             try {
                 const app = initializeApp(firebaseConfig);
                 auth = getAuth(app);
-                await signInAnonymously(auth); // Sign in anonymously to allow database reads/writes in test mode
-                
+                await signInAnonymously(auth); // Allows access to database in test mode
                 db = getFirestore(app);
-                const topicsRef = collection(db, 'public_topics');
                 
-                // Fallback Timer: If DB doesn't load in 5 seconds, use local storage
-                const fallbackTimer = setTimeout(() => {
-                    if (allTopics.length === 0) {
-                        console.warn("Database response too slow. Falling back to local storage.");
-                        db = null; // Disable DB for this session
-                        loadDummyData();
-                    }
-                }, 5000);
+                const topicsRef = collection(db, 'public_topics');
 
+                // Real-time listener for your database
                 onSnapshot(topicsRef, (snapshot) => {
-                    clearTimeout(fallbackTimer); // DB worked! Cancel the fallback
+                    loadingState.classList.add('hidden'); // Hide loading spinner once connected
                     let fetchedTopics = [];
                     snapshot.forEach(doc => {
                         const data = doc.data();
@@ -315,54 +294,19 @@
                     });
                     
                     allTopics = fetchedTopics;
-                    if(allTopics.length === 0) loadDummyData();
-                    else renderTopics();
+                    renderTopics();
                     
                 }, (error) => {
                     console.error("Firebase Read Error:", error);
-                    db = null;
-                    loadDummyData();
+                    loadingState.innerHTML = '<p class="text-red-500 font-bold">Error connecting to database. Make sure rules are set to Test Mode.</p>';
                 });
             } catch (error) {
                 console.error("Firebase init failed:", error);
-                db = null;
-                loadDummyData();
+                loadingState.innerHTML = '<p class="text-red-500 font-bold">Failed to initialize Firebase.</p>';
             }
         }
 
-        // Start initialization
         initializeDatabase();
-
-        function loadDummyData() {
-            allTopics = [
-                { id: '1', title: 'Python Basics', description: 'Basic python concepts, syntax and examples for beginners.', attachments: [], created_at: Date.now() - 500000000 },
-                { id: '2', title: 'Data Structures', description: 'Important concepts of arrays, linked lists, stack and queue.', attachments: [], created_at: Date.now() - 400000000 },
-                { id: '3', title: 'Web Development', description: 'HTML, CSS and JavaScript basics with examples.', attachments: [], created_at: Date.now() - 300000000 }
-            ];
-            
-            try {
-                const local = localStorage.getItem('team10_topics');
-                if(local) {
-                    const parsed = JSON.parse(local);
-                    allTopics = parsed.filter(t => t && t.title).map(t => ({
-                        ...t,
-                        description: t.description || '',
-                        attachments: t.attachments || [],
-                        created_at: t.created_at || Date.now()
-                    }));
-                }
-            } catch(e) {
-                console.error("Local storage corrupted");
-                localStorage.removeItem('team10_topics');
-            }
-            renderTopics();
-        }
-
-        function saveLocallyIfNoDb() {
-            try {
-                localStorage.setItem('team10_topics', JSON.stringify(allTopics));
-            } catch(e) { console.error(e); }
-        }
 
         function renderTopics() {
             try {
@@ -406,12 +350,10 @@
 
         function getResourceHTML(topic) {
             let html = '';
-            
             if (topic.attachments && topic.attachments.length > 0) {
                 topic.attachments.forEach(file => {
                     if(!file || !file.name) return;
                     
-                    // Handle External Links
                     if (file.type === 'link') {
                         html += `<a href="${file.url}" target="_blank" class="flex items-center gap-2 text-xs font-semibold text-purple-700 bg-purple-50 hover:bg-purple-100 px-3 py-2 rounded-lg border border-purple-200 shadow-sm transition-colors cursor-pointer" title="Visit ${file.name}">
                                     <i class="fas fa-external-link-alt text-purple-500 text-base"></i> <span class="max-w-[140px] truncate">${file.name}</span>
@@ -419,12 +361,10 @@
                         return;
                     }
 
-                    // Handle Uploaded Files
                     let icon = 'fas fa-file-alt'; let color = 'text-gray-500';
                     const lower = file.name.toLowerCase();
                     if(lower.endsWith('.pdf')) { icon = 'far fa-file-pdf'; color = 'text-red-500'; }
                     else if(lower.endsWith('.png') || lower.endsWith('.jpg') || lower.endsWith('.jpeg')) { icon = 'far fa-image'; color = 'text-blue-500'; }
-                    else if(lower.endsWith('.mp4') || lower.endsWith('.mov')) { icon = 'fas fa-play-circle'; color = 'text-purple-500'; }
                     else if(lower.endsWith('.doc') || lower.endsWith('.docx')) { icon = 'fas fa-file-word'; color = 'text-blue-600'; }
                     
                     html += `<a href="${file.data}" download="${file.name}" class="flex items-center gap-2 text-xs font-semibold text-gray-700 bg-white hover:bg-blue-50 px-3 py-2 rounded-lg border border-gray-200 shadow-sm transition-colors cursor-pointer" title="Download ${file.name}">
@@ -433,9 +373,7 @@
                 });
             }
 
-            if (html === '') {
-                return `<div class="w-full text-center py-3 border border-dashed border-gray-200 rounded-xl text-xs font-semibold text-gray-500 bg-gray-50 mt-2 flex items-center justify-center gap-2"> No resource available... 😞</div>`;
-            }
+            if (html === '') return `<div class="w-full text-center py-3 border border-dashed border-gray-200 rounded-xl text-xs font-semibold text-gray-500 bg-gray-50 mt-2 flex items-center justify-center gap-2"> No resource available... 😞</div>`;
             return `<div class="flex flex-wrap gap-2 mt-2">${html}</div>`;
         }
 
@@ -540,13 +478,10 @@
             clickTimer = setTimeout(() => { clickCount = 0; }, 1500);
         });
 
+        // Admin Auth (Hidden Base64 encoding)
         document.getElementById('loginSubmitBtn').addEventListener('click', () => {
             const email = document.getElementById('loginEmail').value.trim();
             const pass = document.getElementById('loginPassword').value.trim();
-            
-            // SECURITY: The plain text is hidden. We check the Base64 encoded hash.
-            // btoa(email) === YWRtaW4xMjNAbWFvbS5jb20=
-            // btoa(pass) === cmVsYXg=
             
             if (btoa(email) === 'YWRtaW4xMjNAbWFvbS5jb20=' && btoa(pass) === 'cmVsYXg=') {
                 isAdmin = true;
@@ -609,6 +544,7 @@
             const desc = document.getElementById('topicDesc').value.trim();
 
             if (!title || !desc) { showToast("Title and Description required", "error"); return; }
+            if (!db) { showToast("Not connected to Cloud Database yet", "error"); return; }
 
             const isNew = !id;
             const topicId = isNew ? Date.now().toString() : id;
@@ -620,35 +556,30 @@
                 created_at: isNew ? Date.now() : (allTopics.find(t => t.id === id)?.created_at || Date.now())
             };
 
-            if (isNew) { allTopics.push({ id: topicId, ...topicData }); } 
-            else { const idx = allTopics.findIndex(t => t.id === id); if(idx !== -1) allTopics[idx] = { id: topicId, ...topicData }; }
-            
-            renderTopics();
             closeAllModals();
-            showToast(isNew ? "Topic saved!" : "Topic updated!");
+            showToast("Saving to Cloud...");
 
             try {
-                if(db) await setDoc(doc(db, 'public_topics', topicId), topicData);
-                else saveLocallyIfNoDb();
+                await setDoc(doc(db, 'public_topics', topicId), topicData);
+                showToast(isNew ? "Topic saved!" : "Topic updated!");
             } catch (e) {
                 console.error("Cloud Save Error", e);
-                saveLocallyIfNoDb(); 
+                showToast("Error saving to database. Check console.", "error");
             }
         });
 
         document.getElementById('confirmDeleteBtn').addEventListener('click', async () => {
-            if (!currentTopicToDelete) return;
-            allTopics = allTopics.filter(t => t.id !== currentTopicToDelete);
-            renderTopics();
+            if (!currentTopicToDelete || !db) return;
+            
             closeAllModals();
-            showToast("Topic deleted");
+            showToast("Deleting from Cloud...");
 
             try {
-                if(db) await deleteDoc(doc(db, 'public_topics', currentTopicToDelete));
-                else saveLocallyIfNoDb();
+                await deleteDoc(doc(db, 'public_topics', currentTopicToDelete));
+                showToast("Topic deleted");
             } catch (e) {
                 console.error("Cloud Delete Error", e);
-                saveLocallyIfNoDb();
+                showToast("Error deleting topic", "error");
             }
             currentTopicToDelete = null;
         });
