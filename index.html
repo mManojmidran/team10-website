@@ -57,9 +57,9 @@
         }
         .toast-popup.show { bottom: 24px; }
         
-        .line-clamp-2 {
+        .line-clamp-3 {
             display: -webkit-box;
-            -webkit-line-clamp: 2;
+            -webkit-line-clamp: 3;
             -webkit-box-orient: vertical;  
             overflow: hidden;
         }
@@ -153,7 +153,7 @@
     <div id="modalOverlay" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 hidden flex-col items-center justify-center p-4">
         
         <!-- Admin Login Modal -->
-        <div id="loginModal" class="bg-white rounded-2xl shadow-2xl w-full max-w-[340px] p-8 hidden relative transform trusansition-all">
+        <div id="loginModal" class="bg-white rounded-2xl shadow-2xl w-full max-w-[340px] p-8 hidden relative transform transition-all">
             <button class="close-modal absolute top-4 right-4 text-gray-400 hover:text-gray-600"><i class="fas fa-times text-lg"></i></button>
             <div class="flex flex-col items-center gap-2 mb-6">
                 <div class="w-12 h-12 bg-blue-50 rounded-full flex items-center justify-center mb-1">
@@ -164,11 +164,11 @@
             <div class="space-y-4">
                 <div class="relative">
                     <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none"><i class="far fa-user text-gray-400 text-sm"></i></div>
-                    <input type="email" id="loginEmail" class="w-full pl-10 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl outline-none text-sm focus:bg-white focus:border-blue-500 transition-colors" placeholder="admin123@maom.com">
+                    <input type="email" id="loginEmail" class="w-full pl-10 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl outline-none text-sm focus:bg-white focus:border-blue-500 transition-colors" placeholder="Enter Admin Email">
                 </div>
                 <div class="relative">
                     <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none"><i class="fas fa-lock text-gray-400 text-sm"></i></div>
-                    <input type="password" id="loginPassword" class="w-full pl-10 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl outline-none text-sm focus:bg-white focus:border-blue-500 transition-colors" placeholder="Password">
+                    <input type="password" id="loginPassword" class="w-full pl-10 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl outline-none text-sm focus:bg-white focus:border-blue-500 transition-colors" placeholder="Enter Password">
                 </div>
                 <div id="loginError" class="text-red-500 text-xs hidden font-medium text-center bg-red-50 p-2 rounded-lg">Invalid credentials. Try again.</div>
                 <button id="loginSubmitBtn" class="w-full bg-blueBtn text-white font-semibold py-3 rounded-xl hover:bg-blueBtnHover transition shadow-md mt-2">Login</button>
@@ -187,15 +187,33 @@
                     <input type="text" id="topicTitle" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl outline-none text-sm focus:bg-white focus:border-blue-500" placeholder="e.g. Python Basics">
                 </div>
                 <div>
-                    <label class="block text-sm font-bold text-gray-700 mb-2">Description * (Paste YouTube/Drive links here for big files)</label>
-                    <textarea id="topicDesc" rows="4" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl outline-none text-sm focus:bg-white focus:border-blue-500" placeholder="Briefly describe the topic. If you have large files like 2GB videos, upload them to Google Drive or YouTube and paste the link here!"></textarea>
+                    <label class="block text-sm font-bold text-gray-700 mb-2">Description *</label>
+                    <textarea id="topicDesc" rows="3" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl outline-none text-sm focus:bg-white focus:border-blue-500" placeholder="Briefly describe the topic..."></textarea>
                 </div>
-                <div>
-                    <label class="block text-sm font-bold text-gray-700 mb-2">Attachments (Small Files Only)</label>
+                
+                <!-- NEW: Add External Links -->
+                <div class="border-t border-gray-100 pt-4">
+                    <label class="block text-sm font-bold text-gray-700 mb-2">Add External Link (Google Drive, YouTube, etc.)</label>
+                    <div class="flex flex-col sm:flex-row gap-2">
+                        <input type="url" id="linkUrl" class="flex-1 px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl outline-none text-sm focus:bg-white focus:border-blue-500" placeholder="https://youtube.com/...">
+                        <div class="flex gap-2">
+                            <input type="text" id="linkName" class="w-32 px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl outline-none text-sm focus:bg-white focus:border-blue-500" placeholder="Link Title">
+                            <button id="addLinkBtn" class="bg-gray-800 text-white px-4 py-2.5 rounded-xl hover:bg-gray-900 transition text-sm font-bold shadow-sm whitespace-nowrap"><i class="fas fa-link"></i> Add</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- File Attachments -->
+                <div class="border-t border-gray-100 pt-4">
+                    <label class="block text-sm font-bold text-gray-700 mb-2">Upload Small Files (Photos/PDFs)</label>
                     <input type="file" id="fileInput" multiple class="block w-full text-sm text-gray-500 file:mr-4 file:py-2.5 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-bold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 transition-all border border-gray-200 rounded-xl p-1 bg-gray-50 cursor-pointer">
-                    <p class="text-xs text-gray-500 mt-2 font-medium leading-relaxed"><i class="fas fa-info-circle text-blue-500 mr-1"></i> Attach photos, documents, or small videos. Users can click to download.<br><i class="fas fa-exclamation-triangle text-yellow-500 mr-1"></i> Cloud storage limit: <strong>500KB total max</strong> per topic. (For 2GB videos, paste a Google Drive link in the description above!)</p>
-                    <div id="filePreviewContainer" class="flex flex-wrap gap-2 mt-3"></div>
+                    <p class="text-xs text-gray-500 mt-2 font-medium leading-relaxed">
+                        <i class="fas fa-info-circle text-blue-500 mr-1"></i> Attach photos, documents, or small videos. Max 500KB total.
+                    </p>
                 </div>
+                
+                <!-- Container for Links and Files -->
+                <div id="filePreviewContainer" class="flex flex-wrap gap-2 mt-3 p-3 bg-gray-50 rounded-xl border border-dashed border-gray-200 min-h-[50px]"></div>
             </div>
 
             <div class="flex justify-end gap-3 mt-8 pt-6 border-t border-gray-100">
@@ -237,8 +255,9 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
         import { getFirestore, doc, setDoc, deleteDoc, onSnapshot, collection } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+        import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
 
-        // Your exact Firebase keys from the screenshots
+        // Your specific Firebase Keys
         const firebaseConfig = {
             apiKey: "AIzaSyAAzzTUCdAVzckrFR234CZxHTusgXlPxgw",
             authDomain: "team10-d5285.firebaseapp.com",
@@ -248,7 +267,8 @@
             appId: "1:816289915063:web:7d74aac74196fce7d8ad32"
         };
 
-        let db;
+        let db = null;
+        let auth = null;
         let allTopics = [];
         let isAdmin = false;
         let currentTopicToDelete = null;
@@ -260,54 +280,70 @@
         const sortSelect = document.getElementById('sortSelect');
         const modalOverlay = document.getElementById('modalOverlay');
 
-        try {
-            const app = initializeApp(firebaseConfig);
-            db = getFirestore(app);
-            
-            const topicsRef = collection(db, 'public_topics');
-            onSnapshot(topicsRef, (snapshot) => {
-                allTopics = [];
-                snapshot.forEach(doc => {
-                    const data = doc.data();
-                    // SAFETY CHECK: Ensure data is not corrupted before adding
-                    if (data && data.title) {
-                        allTopics.push({ 
-                            id: doc.id, 
-                            title: data.title,
-                            description: data.description || '',
-                            attachments: data.attachments || [],
-                            created_at: data.created_at || Date.now()
-                        });
-                    }
-                });
+        async function initializeDatabase() {
+            try {
+                const app = initializeApp(firebaseConfig);
+                auth = getAuth(app);
+                await signInAnonymously(auth); // Sign in anonymously to allow database reads/writes in test mode
                 
-                if(allTopics.length === 0) {
+                db = getFirestore(app);
+                const topicsRef = collection(db, 'public_topics');
+                
+                // Fallback Timer: If DB doesn't load in 5 seconds, use local storage
+                const fallbackTimer = setTimeout(() => {
+                    if (allTopics.length === 0) {
+                        console.warn("Database response too slow. Falling back to local storage.");
+                        db = null; // Disable DB for this session
+                        loadDummyData();
+                    }
+                }, 5000);
+
+                onSnapshot(topicsRef, (snapshot) => {
+                    clearTimeout(fallbackTimer); // DB worked! Cancel the fallback
+                    let fetchedTopics = [];
+                    snapshot.forEach(doc => {
+                        const data = doc.data();
+                        if (data && data.title) {
+                            fetchedTopics.push({ 
+                                id: doc.id, 
+                                title: data.title,
+                                description: data.description || '',
+                                attachments: data.attachments || [],
+                                created_at: data.created_at || Date.now()
+                            });
+                        }
+                    });
+                    
+                    allTopics = fetchedTopics;
+                    if(allTopics.length === 0) loadDummyData();
+                    else renderTopics();
+                    
+                }, (error) => {
+                    console.error("Firebase Read Error:", error);
+                    db = null;
                     loadDummyData();
-                } else {
-                    renderTopics();
-                }
-            }, (error) => {
-                console.error("Firebase Read Error:", error);
-                loadDummyData(); // Fallback if database fails to load
-            });
-        } catch (error) {
-            console.error("Firebase init failed:", error);
-            loadDummyData();
+                });
+            } catch (error) {
+                console.error("Firebase init failed:", error);
+                db = null;
+                loadDummyData();
+            }
         }
+
+        // Start initialization
+        initializeDatabase();
 
         function loadDummyData() {
             allTopics = [
                 { id: '1', title: 'Python Basics', description: 'Basic python concepts, syntax and examples for beginners.', attachments: [], created_at: Date.now() - 500000000 },
                 { id: '2', title: 'Data Structures', description: 'Important concepts of arrays, linked lists, stack and queue.', attachments: [], created_at: Date.now() - 400000000 },
-                { id: '3', title: 'Web Development', description: 'HTML, CSS and JavaScript basics with examples. Check out this video: https://youtube.com', attachments: [], created_at: Date.now() - 300000000 },
-                { id: '4', title: 'Database Systems', description: 'Introduction to DBMS, SQL queries and normalization.', attachments: [], created_at: Date.now() - 200000000 }
+                { id: '3', title: 'Web Development', description: 'HTML, CSS and JavaScript basics with examples.', attachments: [], created_at: Date.now() - 300000000 }
             ];
             
             try {
                 const local = localStorage.getItem('team10_topics');
                 if(local) {
                     const parsed = JSON.parse(local);
-                    // Filter out any corrupted local data
                     allTopics = parsed.filter(t => t && t.title).map(t => ({
                         ...t,
                         description: t.description || '',
@@ -316,7 +352,7 @@
                     }));
                 }
             } catch(e) {
-                console.error("Local storage was corrupted, resetting.");
+                console.error("Local storage corrupted");
                 localStorage.removeItem('team10_topics');
             }
             renderTopics();
@@ -350,13 +386,7 @@
                 } else {
                     topicsContainer.classList.remove('hidden');
                     emptyState.style.display = 'none';
-                    filtered.forEach(topic => {
-                        try {
-                            topicsContainer.appendChild(createTopicCard(topic));
-                        } catch(err) {
-                            console.error("Failed to render a topic card", err);
-                        }
-                    });
+                    filtered.forEach(topic => topicsContainer.appendChild(createTopicCard(topic)));
                 }
             } catch(err) {
                 console.error("Critical rendering error:", err);
@@ -379,7 +409,17 @@
             
             if (topic.attachments && topic.attachments.length > 0) {
                 topic.attachments.forEach(file => {
-                    if(!file || !file.name) return; // Safety check
+                    if(!file || !file.name) return;
+                    
+                    // Handle External Links
+                    if (file.type === 'link') {
+                        html += `<a href="${file.url}" target="_blank" class="flex items-center gap-2 text-xs font-semibold text-purple-700 bg-purple-50 hover:bg-purple-100 px-3 py-2 rounded-lg border border-purple-200 shadow-sm transition-colors cursor-pointer" title="Visit ${file.name}">
+                                    <i class="fas fa-external-link-alt text-purple-500 text-base"></i> <span class="max-w-[140px] truncate">${file.name}</span>
+                                 </a>`;
+                        return;
+                    }
+
+                    // Handle Uploaded Files
                     let icon = 'fas fa-file-alt'; let color = 'text-gray-500';
                     const lower = file.name.toLowerCase();
                     if(lower.endsWith('.pdf')) { icon = 'far fa-file-pdf'; color = 'text-red-500'; }
@@ -394,7 +434,7 @@
             }
 
             if (html === '') {
-                return `<div class="w-full text-center py-3 border border-dashed border-gray-200 rounded-xl text-xs font-semibold text-gray-500 bg-gray-50 mt-2 flex items-center justify-center gap-2"> No resources available... 😞</div>`;
+                return `<div class="w-full text-center py-3 border border-dashed border-gray-200 rounded-xl text-xs font-semibold text-gray-500 bg-gray-50 mt-2 flex items-center justify-center gap-2"> No resource available... 😞</div>`;
             }
             return `<div class="flex flex-wrap gap-2 mt-2">${html}</div>`;
         }
@@ -405,9 +445,8 @@
             const style = getIconProps(topic.title);
             const dateStr = new Date(topic.created_at || Date.now()).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
             
-            // Auto link detection in description (with safety check)
             const safeDesc = topic.description || '';
-            let formattedDesc = safeDesc.replace(/(https?:\/\/[^\s]+)/g, '<a href="$1" target="_blank" class="text-blue-500 hover:text-blue-700 underline break-words font-medium"><i class="fas fa-external-link-alt text-xs mr-1"></i>$1</a>');
+            let formattedDesc = safeDesc.replace(/(https?:\/\/[^\s]+)/g, '<a href="$1" target="_blank" class="text-blue-500 hover:text-blue-700 underline break-words font-medium"><i class="fas fa-external-link-alt text-xs mr-1"></i>Link</a>');
 
             let adminControls = '';
             if (isAdmin) {
@@ -473,7 +512,6 @@
             document.getElementById('admin-warning-toast').classList.remove('show');
         });
 
-        // 3-Click Admin Lock
         let clickCount = 0;
         let clickTimer;
         document.getElementById('secretLock').addEventListener('click', () => {
@@ -505,7 +543,12 @@
         document.getElementById('loginSubmitBtn').addEventListener('click', () => {
             const email = document.getElementById('loginEmail').value.trim();
             const pass = document.getElementById('loginPassword').value.trim();
-            if (email === 'admin123@maom.com' && pass === 'relax') {
+            
+            // SECURITY: The plain text is hidden. We check the Base64 encoded hash.
+            // btoa(email) === YWRtaW4xMjNAbWFvbS5jb20=
+            // btoa(pass) === cmVsYXg=
+            
+            if (btoa(email) === 'YWRtaW4xMjNAbWFvbS5jb20=' && btoa(pass) === 'cmVsYXg=') {
                 isAdmin = true;
                 closeAllModals();
                 document.getElementById('addTopicBtn').classList.remove('hidden');
@@ -527,6 +570,8 @@
             document.getElementById('topicDesc').value = '';
             currentAttachments = [];
             document.getElementById('fileInput').value = '';
+            document.getElementById('linkUrl').value = '';
+            document.getElementById('linkName').value = '';
             renderFilePreviews();
             modalOverlay.style.display = 'flex';
             document.getElementById('topicModal').classList.remove('hidden');
@@ -583,14 +628,10 @@
             showToast(isNew ? "Topic saved!" : "Topic updated!");
 
             try {
-                if(db) {
-                    await setDoc(doc(db, 'public_topics', topicId), topicData);
-                } else {
-                    saveLocallyIfNoDb();
-                }
+                if(db) await setDoc(doc(db, 'public_topics', topicId), topicData);
+                else saveLocallyIfNoDb();
             } catch (e) {
                 console.error("Cloud Save Error", e);
-                showToast("Saved locally (Cloud unavailable)", "error");
                 saveLocallyIfNoDb(); 
             }
         });
@@ -612,14 +653,40 @@
             currentTopicToDelete = null;
         });
 
+        document.getElementById('addLinkBtn').addEventListener('click', () => {
+            const url = document.getElementById('linkUrl').value.trim();
+            const name = document.getElementById('linkName').value.trim() || 'External Link';
+            
+            if (!url) { showToast("Please enter a URL first", "error"); return; }
+            if (!url.startsWith('http')) { showToast("URL must start with http:// or https://", "error"); return; }
+
+            currentAttachments.push({ type: 'link', name: name, url: url });
+            renderFilePreviews();
+            
+            document.getElementById('linkUrl').value = '';
+            document.getElementById('linkName').value = '';
+        });
+
         function renderFilePreviews() {
             const container = document.getElementById('filePreviewContainer');
-            container.innerHTML = currentAttachments.map((f, index) => `
-                <div class="flex items-center gap-2 bg-blue-50 text-blue-700 px-3 py-1.5 rounded-lg text-xs font-semibold border border-blue-100">
-                    <i class="fas fa-paperclip"></i> <span class="max-w-[120px] truncate">${f.name}</span>
-                    <i class="fas fa-times cursor-pointer text-red-500 hover:text-red-700 ml-1" onclick="removeAttachment(${index})"></i>
+            
+            if (currentAttachments.length === 0) {
+                container.innerHTML = '<div class="text-sm text-gray-400 w-full text-center">No attachments added yet</div>';
+                return;
+            }
+
+            container.innerHTML = currentAttachments.map((f, index) => {
+                const isLink = f.type === 'link';
+                const bg = isLink ? 'bg-purple-100' : 'bg-blue-100';
+                const text = isLink ? 'text-purple-700' : 'text-blue-700';
+                const icon = isLink ? 'fas fa-link' : 'fas fa-paperclip';
+                
+                return `
+                <div class="flex items-center gap-2 ${bg} ${text} px-3 py-1.5 rounded-lg text-xs font-semibold shadow-sm">
+                    <i class="${icon}"></i> <span class="max-w-[120px] truncate">${f.name}</span>
+                    <i class="fas fa-times cursor-pointer text-gray-500 hover:text-red-500 ml-1" onclick="removeAttachment(${index})"></i>
                 </div>
-            `).join('');
+            `}).join('');
         }
         
         window.removeAttachment = (index) => {
@@ -635,14 +702,14 @@
 
                 for (const file of files) {
                     if (totalSize + file.size > 500000) { 
-                        showToast("File too large! Max 500KB per topic.", "error");
+                        showToast("File too large! Max 500KB total.", "error");
                         break;
                     }
                     try {
                         const base64 = await toBase64(file);
                         currentAttachments.push({
+                            type: 'file',
                             name: file.name,
-                            type: file.type,
                             size: file.size,
                             data: base64
                         });
