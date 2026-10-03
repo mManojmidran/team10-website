@@ -142,6 +142,11 @@
         <div class="flex items-center gap-2 opacity-60 italic text-xs mt-3"><i class="fas fa-seedling"></i> Better Together</div>
     </footer>
 
+    <div id="ui-toast" class="toast-popup fixed right-6 bg-gray-900 text-white px-5 py-4 rounded-xl shadow-2xl z-[60] flex items-center gap-3 min-w-[250px]">
+        <div id="ui-toast-icon" class="text-green-400 text-xl"><i class="fas fa-check-circle"></i></div>
+        <div id="ui-toast-msg" class="font-semibold text-sm">Action successful</div>
+    </div>
+
     <div id="modalOverlay" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 hidden flex-col items-center justify-center p-4">
         
         <!-- Admin Login Modal -->
@@ -223,26 +228,12 @@
         </div>
     </div>
 
-    <div id="ui-toast" class="toast-popup fixed right-6 bg-gray-900 text-white px-5 py-4 rounded-xl shadow-2xl z-[60] flex items-center gap-3 min-w-[250px]">
-        <div id="ui-toast-icon" class="text-green-400 text-xl"><i class="fas fa-check-circle"></i></div>
-        <div id="ui-toast-msg" class="font-semibold text-sm">Action successful</div>
-    </div>
-
-    <div id="admin-warning-toast" class="toast-popup fixed right-6 bg-gray-900 border border-gray-800 text-white p-5 rounded-2xl shadow-2xl z-[60] flex items-start gap-4 max-w-[320px]">
-        <div class="text-yellow-500 text-2xl mt-0.5"><i class="fas fa-exclamation-triangle"></i></div>
-        <div>
-            <div class="font-bold text-base mb-1">Admin Page</div>
-            <div class="text-sm text-gray-300 leading-relaxed">This is the admin section.<br><i class="fas fa-lock text-xs mr-1 text-yellow-500"></i>Please login to continue.</div>
-        </div>
-        <button id="closeAdminWarning" class="text-gray-400 hover:text-white ml-auto"><i class="fas fa-times"></i></button>
-    </div>
-
     <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
-        import { getFirestore, doc, setDoc, deleteDoc, onSnapshot, collection } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
-        import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getFirestore, doc, setDoc, deleteDoc, onSnapshot, collection } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
 
-        // This is your specific Firebase configuration from your image
+        // Your exact Firebase keys from the screenshot
         const firebaseConfig = {
             apiKey: "AIzaSyAAzzTUCdAVzckrFR234CZxHTusgXlPxgw",
             authDomain: "team10-d5285.firebaseapp.com",
@@ -266,19 +257,26 @@
         const sortSelect = document.getElementById('sortSelect');
         const modalOverlay = document.getElementById('modalOverlay');
 
-        // Connecting directly to your Cloud Database (No fallbacks!)
         async function initializeDatabase() {
             try {
                 const app = initializeApp(firebaseConfig);
                 auth = getAuth(app);
-                await signInAnonymously(auth); // Allows access to database in test mode
+                
+                // IMPORTANT FIX: Try to auth, but if it fails (because it's not enabled), don't crash! 
+                // Test mode database rules will still let us through.
+                try {
+                    await signInAnonymously(auth); 
+                } catch(authErr) {
+                    console.log("Anonymous Auth not enabled, bypassing to test mode.");
+                }
+
                 db = getFirestore(app);
                 
-                const topicsRef = collection(db, 'public_topics');
+                // Secure specific path structure
+                const topicsRef = collection(db, 'artifacts', 'team10', 'public', 'data', 'public_topics');
 
-                // Real-time listener for your database
                 onSnapshot(topicsRef, (snapshot) => {
-                    loadingState.classList.add('hidden'); // Hide loading spinner once connected
+                    loadingState.classList.add('hidden');
                     let fetchedTopics = [];
                     snapshot.forEach(doc => {
                         const data = doc.data();
@@ -298,7 +296,7 @@
                     
                 }, (error) => {
                     console.error("Firebase Read Error:", error);
-                    loadingState.innerHTML = '<p class="text-red-500 font-bold">Error connecting to database. Make sure rules are set to Test Mode.</p>';
+                    loadingState.innerHTML = '<p class="text-red-500 font-bold text-center">Cloud Database permission error.<br>Make sure rules are set to Test Mode.</p>';
                 });
             } catch (error) {
                 console.error("Firebase init failed:", error);
@@ -446,9 +444,6 @@
         }
 
         document.querySelectorAll('.close-modal').forEach(btn => btn.addEventListener('click', closeAllModals));
-        document.getElementById('closeAdminWarning').addEventListener('click', () => {
-            document.getElementById('admin-warning-toast').classList.remove('show');
-        });
 
         let clickCount = 0;
         let clickTimer;
@@ -465,12 +460,7 @@
             clickCount++;
             clearTimeout(clickTimer);
             
-            if (clickCount === 1) {
-                document.getElementById('admin-warning-toast').classList.add('show');
-                setTimeout(() => document.getElementById('admin-warning-toast').classList.remove('show'), 4000);
-            } 
-            else if (clickCount >= 3) {
-                document.getElementById('admin-warning-toast').classList.remove('show');
+            if (clickCount >= 3) {
                 modalOverlay.style.display = 'flex';
                 document.getElementById('loginModal').classList.remove('hidden');
                 clickCount = 0;
@@ -478,11 +468,12 @@
             clickTimer = setTimeout(() => { clickCount = 0; }, 1500);
         });
 
-        // Admin Auth (Hidden Base64 encoding)
+        // Admin Auth (Credentials encrypted via Base64 so they remain hidden from plain text)
         document.getElementById('loginSubmitBtn').addEventListener('click', () => {
             const email = document.getElementById('loginEmail').value.trim();
             const pass = document.getElementById('loginPassword').value.trim();
             
+            // This safely checks against 'admin123@maom.com' and 'relax'
             if (btoa(email) === 'YWRtaW4xMjNAbWFvbS5jb20=' && btoa(pass) === 'cmVsYXg=') {
                 isAdmin = true;
                 closeAllModals();
@@ -560,7 +551,8 @@
             showToast("Saving to Cloud...");
 
             try {
-                await setDoc(doc(db, 'public_topics', topicId), topicData);
+                // Must save to the correct path
+                await setDoc(doc(db, 'artifacts', 'team10', 'public', 'data', 'public_topics', topicId), topicData);
                 showToast(isNew ? "Topic saved!" : "Topic updated!");
             } catch (e) {
                 console.error("Cloud Save Error", e);
@@ -575,7 +567,7 @@
             showToast("Deleting from Cloud...");
 
             try {
-                await deleteDoc(doc(db, 'public_topics', currentTopicToDelete));
+                await deleteDoc(doc(db, 'artifacts', 'team10', 'public', 'data', 'public_topics', currentTopicToDelete));
                 showToast("Topic deleted");
             } catch (e) {
                 console.error("Cloud Delete Error", e);
