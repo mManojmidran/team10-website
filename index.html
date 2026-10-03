@@ -188,6 +188,15 @@
                     <textarea id="topicDesc" rows="3" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl outline-none text-sm focus:bg-white focus:border-blue-500" placeholder="Briefly describe the topic..."></textarea>
                 </div>
                 
+                <!-- NEW SUBTOPICS HTML CONTAINER -->
+                <div class="border-t border-gray-100 pt-4">
+                    <div class="flex justify-between items-center mb-2">
+                        <label class="block text-sm font-bold text-gray-700">Sub-topics (Optional)</label>
+                        <button id="addSubtopicBtn" type="button" class="text-blue-500 hover:text-blue-700 text-sm font-bold flex items-center gap-1 transition-colors"><i class="fas fa-plus-circle"></i> Add Sub-topic</button>
+                    </div>
+                    <div id="subtopicsContainerModal" class="space-y-3"></div>
+                </div>
+
                 <div class="border-t border-gray-100 pt-4">
                     <label class="block text-sm font-bold text-gray-700 mb-2">Add External Link (Drive, YouTube, etc.)</label>
                     <div class="flex flex-col sm:flex-row gap-2">
@@ -384,6 +393,21 @@
             const safeDesc = topic.description || '';
             let formattedDesc = safeDesc.replace(/(https?:\/\/[^\s]+)/g, '<a href="$1" target="_blank" class="text-blue-500 hover:text-blue-700 underline break-words font-medium"><i class="fas fa-external-link-alt text-xs mr-1"></i>Link</a>');
 
+            let subtopicsHTML = '';
+            if (topic.subtopics && topic.subtopics.length > 0) {
+                subtopicsHTML = '<div class="mb-5 space-y-3 flex-grow">';
+                topic.subtopics.forEach(st => {
+                    let stDesc = (st.description || '').replace(/(https?:\/\/[^\s]+)/g, '<a href="$1" target="_blank" class="text-blue-500 hover:text-blue-700 underline break-words font-medium"><i class="fas fa-external-link-alt text-xs mr-1"></i>Link</a>');
+                    subtopicsHTML += `
+                        <div class="pl-3 border-l-2 border-blue-400">
+                            ${st.title ? `<h4 class="text-sm font-bold text-gray-800 mb-1">${st.title}</h4>` : ''}
+                            ${st.description ? `<p class="text-sm text-gray-600 whitespace-pre-line">${stDesc}</p>` : ''}
+                        </div>
+                    `;
+                });
+                subtopicsHTML += '</div>';
+            }
+
             let adminControls = '';
             if (isAdmin) {
                 adminControls = `
@@ -408,7 +432,8 @@
                         <p class="text-xs text-gray-500 font-medium flex items-center gap-1.5"><i class="far fa-calendar-alt text-gray-400"></i> ${dateStr}</p>
                     </div>
                 </div>
-                <p class="text-sm text-gray-600 mb-5 flex-grow line-clamp-3 leading-relaxed whitespace-pre-line">${formattedDesc}</p>
+                <p class="text-sm text-gray-600 mb-5 ${!subtopicsHTML ? 'flex-grow' : ''} line-clamp-3 leading-relaxed whitespace-pre-line">${formattedDesc}</p>
+                ${subtopicsHTML}
                 <div class="pt-2 ${isAdmin ? 'pb-8' : ''}">
                     <span class="text-xs font-bold text-gray-400 uppercase tracking-wider block mb-2">Resources:</span>
                     ${getResourceHTML(topic)}
@@ -494,6 +519,7 @@
             document.getElementById('editTopicId').value = '';
             document.getElementById('topicTitle').value = '';
             document.getElementById('topicDesc').value = '';
+            document.getElementById('subtopicsContainerModal').innerHTML = '';
             currentAttachments = [];
             document.getElementById('fileInput').value = '';
             document.getElementById('linkUrl').value = '';
@@ -515,6 +541,12 @@
                     document.getElementById('editTopicId').value = topic.id;
                     document.getElementById('topicTitle').value = topic.title || '';
                     document.getElementById('topicDesc').value = topic.description || '';
+                    
+                    document.getElementById('subtopicsContainerModal').innerHTML = '';
+                    if (topic.subtopics && topic.subtopics.length > 0) {
+                        topic.subtopics.forEach(st => window.appendSubtopicField(st.title, st.description));
+                    }
+
                     currentAttachments = topic.attachments ? [...topic.attachments] : [];
                     document.getElementById('fileInput').value = '';
                     renderFilePreviews();
@@ -529,10 +561,36 @@
             }
         });
 
+        document.getElementById('addSubtopicBtn').addEventListener('click', () => {
+            window.appendSubtopicField();
+        });
+
+        window.appendSubtopicField = (title = '', desc = '') => {
+            const container = document.getElementById('subtopicsContainerModal');
+            const div = document.createElement('div');
+            div.className = 'subtopic-item bg-gray-50 border border-gray-200 p-3 rounded-xl relative shadow-sm';
+            div.innerHTML = `
+                <button type="button" class="absolute top-2 right-2 text-gray-400 hover:text-red-500 transition-colors" onclick="this.closest('.subtopic-item').remove()"><i class="fas fa-times"></i></button>
+                <input type="text" class="subtopic-title-input w-full px-3 py-2 mb-2 bg-white border border-gray-200 rounded-lg outline-none text-sm focus:border-blue-500" placeholder="Sub-topic Title (e.g. Variables)" value="${title.replace(/"/g, '&quot;')}">
+                <textarea rows="2" class="subtopic-desc-input w-full px-3 py-2 bg-white border border-gray-200 rounded-lg outline-none text-sm focus:border-blue-500" placeholder="Sub-topic Description...">${desc.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</textarea>
+            `;
+            container.appendChild(div);
+        };
+
         document.getElementById('saveTopicBtn').addEventListener('click', async () => {
             const id = document.getElementById('editTopicId').value;
             const title = document.getElementById('topicTitle').value.trim();
             const desc = document.getElementById('topicDesc').value.trim();
+
+            const subtopicTitles = document.querySelectorAll('.subtopic-title-input');
+            const subtopicDescs = document.querySelectorAll('.subtopic-desc-input');
+            const subtopicsToSave = [];
+            
+            subtopicTitles.forEach((input, index) => {
+                const t = input.value.trim();
+                const d = subtopicDescs[index].value.trim();
+                if (t || d) subtopicsToSave.push({ title: t, description: d });
+            });
 
             if (!title || !desc) { showToast("Title and Description required", "error"); return; }
             if (!db) { showToast("Not connected to Cloud Database yet", "error"); return; }
@@ -543,6 +601,7 @@
             const topicData = { 
                 title, 
                 description: desc, 
+                subtopics: subtopicsToSave,
                 attachments: currentAttachments, 
                 created_at: isNew ? Date.now() : (allTopics.find(t => t.id === id)?.created_at || Date.now())
             };
